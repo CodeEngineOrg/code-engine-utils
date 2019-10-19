@@ -6,9 +6,9 @@ const delayed = require("../utils/delayed");
 
 describe("IterableWriter class", () => {
 
-  function delayedRead (writer) {
+  function delayedRead (writer, delay = 200) {
     return new Promise((resolve) => {
-      setTimeout(() => resolve(writer.iterable.all()), 200);
+      setTimeout(() => resolve(writer.iterable.all()), delay);
     });
   }
 
@@ -206,6 +206,17 @@ describe("IterableWriter class", () => {
     await writer.end();
 
     expect(await items).to.deep.equal([helloPromise, goodbyePromise]);
+  });
+
+  it("should not resolve end() until all values are read", async () => {
+    let writer = new IterableWriter();
+    delayedRead(writer, 500);
+
+    let beforeEnd = Date.now();
+    await writer.end();
+    let afterEnd = Date.now();
+
+    expect(afterEnd).to.be.at.least(beforeEnd + 500);
   });
 
   it("should ignore multiple calls to end()", async () => {

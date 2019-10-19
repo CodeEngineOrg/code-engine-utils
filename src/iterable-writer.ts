@@ -2,6 +2,7 @@ import { AsyncAllIterableIterator } from "@code-engine/types";
 import { ono } from "ono";
 import { demandIterator } from "./get-iterator";
 import { iterateAll } from "./iterate-all";
+import { pending, Pending } from "./pending";
 
 
 /**
@@ -13,6 +14,9 @@ export class IterableWriter<T> {
 
   /** @internal */
   private _pendingReads: Array<Pending<IteratorResult<T>>> = [];
+
+  /** @internal */
+  private _pendingEnd = pending<void>();
 
   /** @internal */
   private _sourceCounter = 0;
@@ -99,6 +103,7 @@ export class IterableWriter<T> {
   public async end(): Promise<void> {
     this._doneWriting = true;
     await this._resolvePendingReads();
+    return this._pendingEnd.promise;
   }
 
   /**
@@ -113,6 +118,8 @@ export class IterableWriter<T> {
       return { value };
     }
     else if (this._allDone()) {
+      let resolveEnd = await this._pendingEnd.resolve;
+      resolveEnd();
       return { done: true, value: undefined };
     }
     else {
@@ -148,7 +155,9 @@ export class IterableWriter<T> {
       else if (this._allDone()) {
         let pendingRead = this._pendingReads.shift()!;
         let resolve = await pendingRead.resolve;
+        let resolveEnd = await this._pendingEnd.resolve;
         resolve({ done: true, value: undefined });
+        resolveEnd();
       }
       else {
         break;
@@ -175,32 +184,4 @@ export class IterableWriter<T> {
       throw ono(`Cannot write values after the iterator has ended.`);
     }
   }
-}
-
-/**
- * Returns a `Promise` and the `resolve()` function that resolves the promise.
- */
-function pending<T>(): Pending<T> {
-  let resolve: Resolve<T>, reject: Reject;
-
-  let promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {
-    promise,
-    resolve: new Promise((r) => r(resolve)),
-    reject: new Promise((r) => r(reject)),
-  };
-}
-
-// tslint:disable: completed-docs
-type Resolve<T> = (result: T | PromiseLike<T>) => void;
-type Reject = (error: Error) => void;
-
-interface Pending<T> {
-  promise: Promise<T>;
-  resolve: Promise<Resolve<T>>;
-  reject: Promise<Reject>;
 }
