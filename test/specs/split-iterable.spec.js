@@ -65,14 +65,14 @@ describe("splitIterable() function", () => {
     }
 
     let values = await Promise.all([
-      delayedReader(iterables[0], 100),
-      delayedReader(iterables[1], 220),
-      delayedReader(iterables[2], 330),
+      delayedReader(iterables[0], 200),
+      delayedReader(iterables[1], 350),
+      delayedReader(iterables[2], 550),
     ]);
 
-    expect(values[0]).to.deep.equal(["0", "3", "4", "6", "8"]);
-    expect(values[1]).to.deep.equal(["1", "5", "9"]);
-    expect(values[2]).to.deep.equal(["2", "7"]);
+    expect(values[0]).to.deep.equal(["0", "3", "5", "7", "9"]);
+    expect(values[1]).to.deep.equal(["1", "4", "8"]);
+    expect(values[2]).to.deep.equal(["2", "6"]);
   });
 
   it("should throw an error if called with no args", async () => {
