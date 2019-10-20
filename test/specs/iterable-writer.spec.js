@@ -1,6 +1,6 @@
 "use strict";
 
-const { IterableWriter } = require("../../lib");
+const { IterableWriter } = require("../../");
 const { assert, expect } = require("chai");
 const delayed = require("../utils/delayed");
 

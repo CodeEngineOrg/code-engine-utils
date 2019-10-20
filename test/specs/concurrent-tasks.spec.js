@@ -1,6 +1,6 @@
 "use strict";
 
-const { ConcurrentTasks } = require("../../lib");
+const { ConcurrentTasks } = require("../../");
 const { assert, expect } = require("chai");
 const delayed = require("../utils/delayed");
 
