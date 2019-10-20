@@ -1,3 +1,4 @@
+export { ConcurrentTasks } from "./concurrent-tasks";
 export { createFile } from "./create-file";
 export { IterableWriter } from "./iterable-writer";
 export { iterate } from "./iterate";

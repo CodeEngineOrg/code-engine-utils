@@ -3,7 +3,7 @@
 const { expect } = require("chai");
 const commonJSExport = require("../../");
 const {
-  default: defaultExport, createFile, log, validate,
+  default: defaultExport, createFile, log, validate, ConcurrentTasks,
   iterate, iterateAll, joinIterables, splitIterable, IterableWriter
 } = require("../../");
 
@@ -21,6 +21,16 @@ describe("@code-engine/utils package exports", () => {
   it("should export the log function as a named export", () => {
     expect(log).to.be.a("function");
     expect(log.name).to.equal("log");
+  });
+
+  it("should export the validate object as a named export", () => {
+    expect(validate).to.be.an("object").with.keys("concurrency");
+    expect(validate.concurrency).to.be.a("function");
+  });
+
+  it("should export the ConcurrentTasks class as a named export", () => {
+    expect(ConcurrentTasks).to.be.a("function");
+    expect(ConcurrentTasks.name).to.equal("ConcurrentTasks");
   });
 
   it("should export the iterate function as a named export", () => {
@@ -48,21 +58,17 @@ describe("@code-engine/utils package exports", () => {
     expect(IterableWriter.name).to.equal("IterableWriter");
   });
 
-  it("should export the validate object as a named export", () => {
-    expect(validate).to.be.an("object").with.keys("concurrency");
-    expect(validate.concurrency).to.be.a("function");
-  });
-
   it("should not export anything else", () => {
     expect(commonJSExport).to.have.keys(
       "createFile",
       "log",
+      "validate",
+      "ConcurrentTasks",
       "iterate",
       "iterateAll",
       "joinIterables",
       "splitIterable",
       "IterableWriter",
-      "validate",
     );
   });
 
