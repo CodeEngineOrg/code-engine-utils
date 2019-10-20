@@ -69,12 +69,12 @@ describe("Validation functions", () => {
       expect(invalid(NaN)).to.throw(RangeError, "Concurrency must be a positive integer, not NaN.");
       expect(invalid(null)).to.throw(TypeError, "Concurrency must be a positive integer, not null.");
       expect(invalid(undefined)).to.throw(TypeError, "Concurrency must be a positive integer, not undefined.");
-      expect(invalid("")).to.throw(TypeError, "Concurrency must be a positive integer, not string.");
-      expect(invalid("Hello, World")).to.throw(TypeError, "Concurrency must be a positive integer, not string.");
-      expect(invalid(new Date())).to.throw(TypeError, "Concurrency must be a positive integer, not Date");
-      expect(invalid(/1234/)).to.throw(TypeError, "Concurrency must be a positive integer, not RegExp.");
-      expect(invalid({ foo: "bar" })).to.throw(TypeError, "Concurrency must be a positive integer, not Object.");
-      expect(invalid([1, 2, 3])).to.throw(TypeError, "Concurrency must be a positive integer, not Array");
+      expect(invalid("")).to.throw(TypeError, "Concurrency must be a positive integer, not a string.");
+      expect(invalid("Hello, World")).to.throw(TypeError, "Concurrency must be a positive integer, not a string.");
+      expect(invalid(new Date())).to.throw(TypeError, "Concurrency must be a positive integer, not a Date");
+      expect(invalid(/1234/)).to.throw(TypeError, "Concurrency must be a positive integer, not /1234/.");
+      expect(invalid({ foo: "bar" })).to.throw(TypeError, "Concurrency must be a positive integer, not an Object.");
+      expect(invalid([1, 2, 3])).to.throw(TypeError, "Concurrency must be a positive integer, not 1,2,3.");
     });
 
     it("should throw an error for invalid defaults", () => {
@@ -88,8 +88,8 @@ describe("Validation functions", () => {
       expect(negative(NaN)).to.throw(RangeError, "Concurrency must be a positive integer, not NaN.");
       expect(negative(Infinity)).to.throw(RangeError, "Concurrency must be a positive integer, not Infinity.");
       expect(negative(Number.EPSILON)).to.throw(RangeError, "Concurrency must be a positive integer, not 2.220446049250313e-16.");
-      expect(negative("")).to.throw(TypeError, "Concurrency must be a positive integer, not string.");
-      expect(negative(new Date())).to.throw(TypeError, "Concurrency must be a positive integer, not Date.");
+      expect(negative("")).to.throw(TypeError, "Concurrency must be a positive integer, not a string.");
+      expect(negative(new Date())).to.throw(TypeError, "Concurrency must be a positive integer, not a Date.");
     });
 
   });

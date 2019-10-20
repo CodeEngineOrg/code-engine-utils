@@ -1,5 +1,5 @@
 import { ono } from "ono";
-import * as typeName from "type-name";
+import { valueToString } from "./value-to-string";
 
 /**
  * CodeEngine validation functions
@@ -14,7 +14,8 @@ export const validate = {
     }
 
     if (typeof concurrency !== "number") {
-      throw ono.type(`Concurrency must be a positive integer, not ${typeName(concurrency)}.`);
+      let value = valueToString(concurrency, { article: true });
+      throw ono.type(`Concurrency must be a positive integer, not ${value}.`);
     }
     if (!concurrency || concurrency < 1 || !Number.isInteger(concurrency)) {
       throw ono.range(`Concurrency must be a positive integer, not ${concurrency}.`);

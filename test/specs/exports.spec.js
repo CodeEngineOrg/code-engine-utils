@@ -3,7 +3,7 @@
 const { expect } = require("chai");
 const commonJSExport = require("../../");
 const {
-  default: defaultExport, createFile, log, validate, ConcurrentTasks,
+  default: defaultExport, createFile, log, validate, valueToString, ConcurrentTasks,
   iterate, iterateAll, joinIterables, splitIterable, IterableWriter
 } = require("../../");
 
@@ -26,6 +26,11 @@ describe("@code-engine/utils package exports", () => {
   it("should export the validate object as a named export", () => {
     expect(validate).to.be.an("object").with.keys("concurrency");
     expect(validate.concurrency).to.be.a("function");
+  });
+
+  it("should export the valueToString function as a named export", () => {
+    expect(valueToString).to.be.a("function");
+    expect(valueToString.name).to.equal("valueToString");
   });
 
   it("should export the ConcurrentTasks class as a named export", () => {
@@ -63,6 +68,7 @@ describe("@code-engine/utils package exports", () => {
       "createFile",
       "log",
       "validate",
+      "valueToString",
       "ConcurrentTasks",
       "iterate",
       "iterateAll",

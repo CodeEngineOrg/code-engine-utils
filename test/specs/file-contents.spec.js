@@ -195,7 +195,7 @@ describe("File contents", () => {
     }
 
     expect(invalidContents).to.throw(TypeError);
-    expect(invalidContents).to.throw("Invalid file contents: number");
+    expect(invalidContents).to.throw("Invalid file contents: 12345");
   });
 
   it("should throw an error if called with invalid text", () => {
@@ -207,7 +207,7 @@ describe("File contents", () => {
     }
 
     expect(invalidContents).to.throw(TypeError);
-    expect(invalidContents).to.throw("Invalid file contents: number");
+    expect(invalidContents).to.throw("Invalid file contents: 12345");
   });
 
 });

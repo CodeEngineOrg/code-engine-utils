@@ -1,7 +1,7 @@
 import { AnyContents, File, FileInfo } from "@code-engine/types";
 import { ono } from "ono";
 import * as path from "path";
-import * as typeName from "type-name";
+import { valueToString } from "./value-to-string";
 
 const _private = Symbol("private");
 
@@ -97,7 +97,7 @@ function createFileProps(props: File | FileInfo | string, pluginName?: string): 
   }
 
   if (!props || typeof props !== "object" || typeof props.path !== "string") {
-    throw ono.type(`[${typeName(props)}] is not a valid CodeEngine file. Expected an object with at least a "path" property.`);
+    throw ono.type(`Invalid CodeEngine file: ${valueToString(props)}. Expected an object with at least a "path" property.`);
   }
 
   let filePath = validatePath(props.path);
@@ -189,7 +189,7 @@ function toBuffer(value?: AnyContents): Buffer {
     }
   }
   catch (error) {
-    throw ono.type(error, `Invalid file contents: ${typeName(value)}`);
+    throw ono.type(error, `Invalid file contents: ${valueToString(value)}`);
   }
 }
 

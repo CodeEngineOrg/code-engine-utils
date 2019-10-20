@@ -82,7 +82,7 @@ describe("splitIterable() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("[undefined] is not an async iterator.");
+      expect(error.message).to.equal("Undefined is not an async iterator.");
     }
   });
 
@@ -93,7 +93,7 @@ describe("splitIterable() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("[Array] is not an async iterator.");
+      expect(error.message).to.equal("1,2,3 is not an async iterator.");
     }
   });
 
@@ -104,7 +104,7 @@ describe("splitIterable() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("[Promise] is not an async iterator.");
+      expect(error.message).to.equal("A Promise is not an async iterator.");
     }
   });
 

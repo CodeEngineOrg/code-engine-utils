@@ -237,7 +237,7 @@ describe("createFile() function", () => {
     }
 
     expect(noArgs).to.throw(TypeError);
-    expect(noArgs).to.throw("[undefined] is not a valid CodeEngine file. Expected an object with at least a \"path\" property.");
+    expect(noArgs).to.throw("Invalid CodeEngine file: undefined. Expected an object with at least a \"path\" property.");
   });
 
   it("should throw an error if called with an empty object", () => {
@@ -246,7 +246,7 @@ describe("createFile() function", () => {
     }
 
     expect(emptyObj).to.throw(TypeError);
-    expect(emptyObj).to.throw("[Object] is not a valid CodeEngine file. Expected an object with at least a \"path\" property.");
+    expect(emptyObj).to.throw("Invalid CodeEngine file: Object. Expected an object with at least a \"path\" property.");
   });
 
   it("should throw an error if called with an empty string", () => {
@@ -264,7 +264,7 @@ describe("createFile() function", () => {
     }
 
     expect(invalidArg).to.throw(TypeError);
-    expect(invalidArg).to.throw("[number] is not a valid CodeEngine file. Expected an object with at least a \"path\" property.");
+    expect(invalidArg).to.throw("Invalid CodeEngine file: 12345. Expected an object with at least a \"path\" property.");
   });
 
   it("should throw an error if called with an invalid path", () => {
@@ -273,7 +273,7 @@ describe("createFile() function", () => {
     }
 
     expect(invalidPath).to.throw(TypeError);
-    expect(invalidPath).to.throw("[Object] is not a valid CodeEngine file. Expected an object with at least a \"path\" property.");
+    expect(invalidPath).to.throw("Invalid CodeEngine file: Object. Expected an object with at least a \"path\" property.");
   });
 
 });

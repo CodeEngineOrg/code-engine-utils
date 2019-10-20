@@ -100,7 +100,7 @@ describe("joinIterables() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("[number] is not iterable.");
+      expect(error.message).to.equal("12345 is not iterable.");
     }
   });
 
@@ -111,7 +111,7 @@ describe("joinIterables() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("[RegExp] is not iterable.");
+      expect(error.message).to.equal("/regex/ is not iterable.");
     }
   });
 
@@ -122,7 +122,7 @@ describe("joinIterables() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("[Promise] is not iterable.");
+      expect(error.message).to.equal("A Promise is not iterable.");
     }
   });
 
