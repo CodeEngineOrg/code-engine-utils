@@ -5,7 +5,7 @@ const { assert, expect } = require("chai");
 const delayed = require("../utils/delayed");
 
 describe("ConcurrentTasks class", () => {
-  function task (delay = 100) {
+  function task (delay) {
     return delayed(undefined, delay);
   }
 
@@ -14,7 +14,9 @@ describe("ConcurrentTasks class", () => {
     await promise;
     let endTime = Date.now();
 
-    const buffer = 10;
+    // CI environments are slow, so use a larger buffer
+    const buffer = process.env.CI ? 75 : 10;
+
     expect(endTime - startTime).to.be.at.least(time - buffer).and.at.most(time + buffer);
   }
 
@@ -45,57 +47,57 @@ describe("ConcurrentTasks class", () => {
   it("should run a single task", async () => {
     let tasks = new ConcurrentTasks(5);
 
-    tasks.add(task(100));
-    await assertTimeTaken(tasks.waitForAvailability(), 0);
-
-    await assertTimeTaken(tasks.waitForAll(), 100);
-  });
-
-  it("should run fewer tasks than the concurrency limit", async () => {
-    let tasks = new ConcurrentTasks(5);
-
-    tasks.add(task(100));
-    await assertTimeTaken(tasks.waitForAvailability(), 0);
-
-    tasks.add(task(200));
-    await assertTimeTaken(tasks.waitForAvailability(), 0);
-
     tasks.add(task(300));
     await assertTimeTaken(tasks.waitForAvailability(), 0);
 
     await assertTimeTaken(tasks.waitForAll(), 300);
   });
 
+  it("should run fewer tasks than the concurrency limit", async () => {
+    let tasks = new ConcurrentTasks(5);
+
+    tasks.add(task(300));
+    await assertTimeTaken(tasks.waitForAvailability(), 0);
+
+    tasks.add(task(400));
+    await assertTimeTaken(tasks.waitForAvailability(), 0);
+
+    tasks.add(task(500));
+    await assertTimeTaken(tasks.waitForAvailability(), 0);
+
+    await assertTimeTaken(tasks.waitForAll(), 500);
+  });
+
   it("should run more tasks than the concurrency limit", async () => {
     let tasks = new ConcurrentTasks(3);
 
-    tasks.add(task(100));
-    await assertTimeTaken(tasks.waitForAvailability(), 0);
-
-    tasks.add(task(200));
-    await assertTimeTaken(tasks.waitForAvailability(), 0);
-
     tasks.add(task(300));
-    await assertTimeTaken(tasks.waitForAvailability(), 100);
+    await assertTimeTaken(tasks.waitForAvailability(), 0);
 
     tasks.add(task(400));
-    await assertTimeTaken(tasks.waitForAvailability(), 100);
+    await assertTimeTaken(tasks.waitForAvailability(), 0);
 
     tasks.add(task(500));
+    await assertTimeTaken(tasks.waitForAvailability(), 300);
+
+    tasks.add(task(600));
     await assertTimeTaken(tasks.waitForAvailability(), 100);
 
-    await assertTimeTaken(tasks.waitForAll(), 400);
+    tasks.add(task(700));
+    await assertTimeTaken(tasks.waitForAvailability(), 100);
+
+    await assertTimeTaken(tasks.waitForAll(), 600);
   });
 
   it("should throw an error if more tasks are added than the concurrency limit", async () => {
     let tasks = new ConcurrentTasks(3);
 
-    tasks.add(task(100));
-    tasks.add(task(200));
     tasks.add(task(300));
+    tasks.add(task(400));
+    tasks.add(task(500));
 
     try {
-      tasks.add(task(400));
+      tasks.add(task(600));
       assert.fail("An error should have been thrown.");
     }
     catch (error) {
