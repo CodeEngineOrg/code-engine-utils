@@ -246,7 +246,7 @@ describe("createFile() function", () => {
     }
 
     expect(emptyObj).to.throw(TypeError);
-    expect(emptyObj).to.throw("Invalid CodeEngine file: Object. Expected an object with at least a \"path\" property.");
+    expect(emptyObj).to.throw("Invalid CodeEngine file: {}. Expected an object with at least a \"path\" property.");
   });
 
   it("should throw an error if called with an empty string", () => {
@@ -273,7 +273,7 @@ describe("createFile() function", () => {
     }
 
     expect(invalidPath).to.throw(TypeError);
-    expect(invalidPath).to.throw("Invalid CodeEngine file: Object. Expected an object with at least a \"path\" property.");
+    expect(invalidPath).to.throw("Invalid CodeEngine file: {path}. Expected an object with at least a \"path\" property.");
   });
 
 });

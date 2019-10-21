@@ -40,8 +40,29 @@ export function valueToString(value: unknown, options: ValueToStringOptions = {}
         canHavArticle = false;
     }
   }
+  else if (type === "object") {
+    str = typeName(value);
+
+    if (str === "Object") {
+      let keys = Object.keys(value as object);
+
+      if (keys.length === 0) {
+        str = "{}";
+        canHavArticle = false;
+      }
+      else {
+        str = `{${keys}}`;
+        if (str.length <= maxLength) {
+          canHavArticle = false;
+        }
+        else {
+          str = "Object";
+        }
+      }
+    }
+  }
   else {
-    str = type === "object" ? typeName(value) : type;
+    str = type;
   }
 
   if (options.article && canHavArticle) {
