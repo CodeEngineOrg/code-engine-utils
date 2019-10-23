@@ -20,5 +20,11 @@ function isValidFile (file) {
   expect(file.name).to.be.a("string").and.not.empty;
   expect(file.extension).to.be.a("string");
   expect(file.path).to.be.a("string").and.not.empty;
+
+  expect(file).to.include.keys("sourceMap");
+  if (file.sourceMap !== undefined) {
+    expect(file.sourceMap).to.be.an("object");
+  }
+
   return true;
 }

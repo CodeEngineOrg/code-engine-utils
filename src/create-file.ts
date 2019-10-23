@@ -104,6 +104,7 @@ function createFileProps(props: File | FileInfo | string, pluginName?: string): 
   let { dir, name, ext } = path.parse(filePath);
   let contents = toBuffer(props.contents === undefined ? props.text : props.contents);
   let source = props.source ? String(props.source) : createSourceURL(filePath, pluginName);
+  let sourceMap = props.sourceMap || undefined;
   let createdAt = props.createdAt || new Date();
   let modifiedAt = props.modifiedAt || new Date();
   let metadata = props.metadata || {};
@@ -111,6 +112,7 @@ function createFileProps(props: File | FileInfo | string, pluginName?: string): 
   return {
     [_private]: { value: { dir, name, ext, contents }},
     source: { value: source, enumerable: true },
+    sourceMap: { value: sourceMap, enumerable: true },
     createdAt: { value: createdAt, writable: true, enumerable: true },
     modifiedAt: { value: modifiedAt, writable: true, enumerable: true },
     metadata: { value: metadata, writable: true, enumerable: true },

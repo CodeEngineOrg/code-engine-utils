@@ -40,6 +40,7 @@ describe("createFile() function", () => {
       path: "file.txt",
       metadata: {
         source: "aaaaaaaa",
+        sourceMap: { file: "xxxxx" },
         path: "bbbbbbbbb",
         dir: "xxxxx",
         name: "yyyyy",
@@ -55,6 +56,7 @@ describe("createFile() function", () => {
 
     // All path properties are set from "path", NOT metadata
     expect(file.source).to.equal("code-engine://plugin/file.txt");
+    expect(file.sourceMap).to.equal(undefined);
     expect(file.path).to.equal("file.txt");
     expect(file.dir).to.equal("");
     expect(file.name).to.equal("file.txt");
@@ -67,6 +69,7 @@ describe("createFile() function", () => {
     // All metadata should be copied as-is
     expect(file.metadata).to.deep.equal({
       source: "aaaaaaaa",
+      sourceMap: { file: "xxxxx" },
       path: "bbbbbbbbb",
       dir: "xxxxx",
       name: "yyyyy",
@@ -138,6 +141,7 @@ describe("createFile() function", () => {
       modifiedAt: new Date("2002-02-02T02:02:02.002Z"),
       contents: "hello, world",
       metadata: { foo: "bar" },
+      sourceMap: { file: "file.txt" },
     });
 
     let pojo = Object.assign(
@@ -152,6 +156,7 @@ describe("createFile() function", () => {
       source: "code-engine://plugin/path/to/file.txt",
       contents: Buffer.from("hello, world"),
       metadata: { foo: "bar" },
+      sourceMap: { file: "file.txt" },
 
       // The createdAt of the file overwrites the createdAt of object A
       a: "A",
@@ -170,6 +175,7 @@ describe("createFile() function", () => {
       modifiedAt: new Date("2002-02-02T02:02:02.002Z"),
       contents: "hello, world",
       metadata: { foo: "bar" },
+      sourceMap: { file: "file.txt" },
     });
 
     let pojo = {
@@ -186,6 +192,7 @@ describe("createFile() function", () => {
       source: "code-engine://plugin/path/to/file.txt",
       contents: Buffer.from("hello, world"),
       metadata: { foo: "bar" },
+      sourceMap: { file: "file.txt" },
 
       // The createdAt of the file overwrites the createdAt of the pojo
       a: "A",
@@ -211,6 +218,7 @@ describe("createFile() function", () => {
       metadata: {
         foo: "bar",
       },
+      sourceMap: { file: "file.txt" },
       contents: "hello, world",
     });
 
@@ -224,6 +232,7 @@ describe("createFile() function", () => {
       metadata: {
         foo: "bar",
       },
+      sourceMap: { file: "file.txt" },
       contents: {
         type: "Buffer",
         data: [104, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100],
