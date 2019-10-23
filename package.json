@@ -1,6 +1,6 @@
 {
   "name": "@code-engine/utils",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.6",
   "description": "Internal CodeEngine utilities",
   "keywords": [
     "code-engine"
@@ -28,7 +28,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "test": "mocha && npm run lint",
-    "coverage": "nyc mocha",
+    "coverage": "nyc node_modules/mocha/bin/mocha",
     "upgrade": "npm-check -u",
     "bump": "bump prerelease --tag --push --all",
     "release": "npm run upgrade && npm run clean && npm run build && npm test && npm run bump"
@@ -38,10 +38,10 @@
   },
   "engineStrict": true,
   "devDependencies": {
-    "@code-engine/types": "^1.0.0-beta.1",
-    "@types/chai": "^4.2.2",
+    "@code-engine/types": "^1.0.0-beta.2",
+    "@types/chai": "^4.2.4",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.11.5",
     "@types/sinon": "^7.5.0",
     "@types/type-name": "^1.0.27",
     "chai": "^4.2.0",
