@@ -23,6 +23,9 @@ export function valueToString(value: unknown, options: ValueToStringOptions = {}
   else if (Number.isNaN(value as number)) {
     return "NaN";
   }
+  else if (str.length > 0 && Array.isArray(value)) {
+    str = `[${str}]`;
+  }
 
   if (str.length > 0 && str.length <= maxLength) {
     // tslint:disable-next-line: switch-default

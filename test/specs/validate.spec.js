@@ -74,7 +74,7 @@ describe("Validation functions", () => {
       expect(invalid(new Date())).to.throw(TypeError, "Concurrency must be a positive integer, not a Date");
       expect(invalid(/1234/)).to.throw(TypeError, "Concurrency must be a positive integer, not /1234/.");
       expect(invalid({ foo: "bar" })).to.throw(TypeError, "Concurrency must be a positive integer, not {foo}.");
-      expect(invalid([1, 2, 3])).to.throw(TypeError, "Concurrency must be a positive integer, not 1,2,3.");
+      expect(invalid([1, 2, 3])).to.throw(TypeError, "Concurrency must be a positive integer, not [1,2,3].");
     });
 
     it("should throw an error for invalid defaults", () => {

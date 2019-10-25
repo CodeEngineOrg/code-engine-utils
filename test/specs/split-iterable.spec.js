@@ -93,7 +93,7 @@ describe("splitIterable() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("1,2,3 is not an async iterator.");
+      expect(error.message).to.equal("[1,2,3] is not an async iterator.");
     }
   });
 

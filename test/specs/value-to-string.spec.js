@@ -1,4 +1,4 @@
-/* eslint-disable no-new-func, no-new-wrappers, no-new-object */
+/* eslint-disable no-new-func, no-new-wrappers, no-new-object, no-array-constructor */
 /* global BigInt */
 "use strict";
 
@@ -188,6 +188,8 @@ describe("valueToString() function", () => {
       expect(valueToString(new Boolean(false))).to.equal("false");
       expect(valueToString(new String("hello"))).to.equal("hello");
       expect(valueToString(new RegExp("^xyz$"))).to.equal("/^xyz$/");
+      expect(valueToString(Array.of(1))).to.equal("[1]");
+      expect(valueToString(new Array(1, 2, 3, 4))).to.equal("[1,2,3,4]");
       expect(valueToString(new Object({}))).to.equal("{}");
       expect(valueToString({})).to.equal("{}");
       expect(valueToString({ x: 1, y: 2 })).to.equal("{x,y}");
@@ -202,8 +204,9 @@ describe("valueToString() function", () => {
       expect(valueToString(new RegExp("^(long regexp)$"))).to.equal("RegExp");
       expect(valueToString(new Object({ fooBarBaz: 1 }))).to.equal("Object");
       expect(valueToString({ fooBarBaz: 1 })).to.equal("Object");
-      expect(valueToString(new Array(0))).to.equal("Array");
+      expect(valueToString(new Array())).to.equal("Array");
       expect(valueToString([])).to.equal("Array");
+      expect(valueToString([1, 2, 3, 4, 5, 6])).to.equal("Array");
       expect(valueToString(new Map())).to.equal("Map");
       expect(valueToString(new Set())).to.equal("Set");
     });
@@ -218,6 +221,7 @@ describe("valueToString() function", () => {
       expect(valueToString({ fooBarBaz: 1 }, { capitalize: true })).to.equal("Object");
       expect(valueToString(new Array(0), { capitalize: true })).to.equal("Array");
       expect(valueToString([], { capitalize: true })).to.equal("Array");
+      expect(valueToString([1, 2, 3, 4, 5, 6])).to.equal("Array");
       expect(valueToString(new Map(), { capitalize: true })).to.equal("Map");
       expect(valueToString(new Set(), { capitalize: true })).to.equal("Set");
     });
@@ -242,6 +246,7 @@ describe("valueToString() function", () => {
       expect(valueToString({ fooBarBaz: 1 }, { article: true })).to.equal("an Object");
       expect(valueToString(new Array(0), { article: true })).to.equal("an Array");
       expect(valueToString([], { article: true })).to.equal("an Array");
+      expect(valueToString([1, 2, 3, 4, 5, 6], { article: true })).to.equal("an Array");
       expect(valueToString(new Map(), { article: true })).to.equal("a Map");
       expect(valueToString(new Set(), { article: true })).to.equal("a Set");
 
@@ -254,6 +259,7 @@ describe("valueToString() function", () => {
       expect(valueToString({ fooBarBaz: 1 }, { capitalize: true, article: true })).to.equal("An Object");
       expect(valueToString(new Array(0), { capitalize: true, article: true })).to.equal("An Array");
       expect(valueToString([], { capitalize: true, article: true })).to.equal("An Array");
+      expect(valueToString([1, 2, 3, 4, 5, 6], { capitalize: true, article: true })).to.equal("An Array");
       expect(valueToString(new Map(), { capitalize: true, article: true })).to.equal("A Map");
       expect(valueToString(new Set(), { capitalize: true, article: true })).to.equal("A Set");
     });
@@ -263,6 +269,8 @@ describe("valueToString() function", () => {
       expect(valueToString(new Boolean(false), { article: true })).to.equal("false");
       expect(valueToString(new String("hello"), { article: true })).to.equal("hello");
       expect(valueToString(new RegExp("^xyz$"), { article: true })).to.equal("/^xyz$/");
+      expect(valueToString(Array.of(1), { article: true })).to.equal("[1]");
+      expect(valueToString(new Array(1, 2, 3, 4), { article: true })).to.equal("[1,2,3,4]");
       expect(valueToString({}, { article: true })).to.equal("{}");
       expect(valueToString({ x: 1, y: 2 }, { article: true })).to.equal("{x,y}");
       expect(valueToString(new Object({ toString: () => "obj" }, { article: true }))).to.equal("obj");
@@ -271,6 +279,8 @@ describe("valueToString() function", () => {
       expect(valueToString(new Boolean(false), { capitalize: true, article: true })).to.equal("False");
       expect(valueToString(new String("hello"), { capitalize: true, article: true })).to.equal("Hello");
       expect(valueToString(new RegExp("^xyz$"), { capitalize: true, article: true })).to.equal("/^xyz$/");
+      expect(valueToString(Array.of(1), { capitalize: true, article: true })).to.equal("[1]");
+      expect(valueToString(new Array(1, 2, 3, 4), { capitalize: true, article: true })).to.equal("[1,2,3,4]");
       expect(valueToString({}, { capitalize: true, article: true })).to.equal("{}");
       expect(valueToString({ x: 1, y: 2 }, { capitalize: true, article: true })).to.equal("{x,y}");
       expect(valueToString(new Object({ toString: () => "obj" }, { capitalize: true, article: true }))).to.equal("obj");
