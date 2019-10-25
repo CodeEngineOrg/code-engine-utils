@@ -29,7 +29,7 @@ export function getIterator<T>(iterable: ZeroOrMore<T>): Iterator<T> | AsyncIter
 export function demandIterator<T>(iterable: ZeroOrMore<T>): Iterator<T> | AsyncIterator<T> {
   let iterator = getIterator(iterable);
 
-  if (!iterator) {
+  if (!iterator || typeof iterator.next !== "function") {
     let value = valueToString(iterable, { capitalize: true, article: true });
     throw ono.type(`${value} is not iterable.`);
   }
