@@ -152,7 +152,7 @@ describe("normalizeFileInfo() function", () => {
     }
 
     expect(emptyString).to.throw(Error);
-    expect(emptyString).to.throw("Invalid CodeEngine file: string. Expected an object with at least a \"path\" property.");
+    expect(emptyString).to.throw("Invalid CodeEngine file: \"\". Expected an object with at least a \"path\" property.");
   });
 
   it("should throw an error if called with an invalid argument", () => {

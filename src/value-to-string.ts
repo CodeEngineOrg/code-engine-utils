@@ -1,8 +1,5 @@
 import * as typeName from "type-name";
 
-// The maximum length of a value before we opt to show the type name instead
-const maxLength = 10;
-
 const vowels = ["a", "e", "i", "o", "u"];
 
 /**
@@ -14,11 +11,21 @@ export function valueToString(value: unknown, options: ValueToStringOptions = {}
   let str = String(value);
   let canHavArticle = true;
 
+  let article = options.article;
+  let capitalize = options.capitalize;
+  let maxLength = options.maxLength || 25;
+
   if (value === null) {
-    return options.capitalize ? "Null" : "null";
+    return capitalize ? "Null" : "null";
   }
   else if (value === undefined) {
-    return options.capitalize ? "Undefined" : "undefined";
+    return capitalize ? "Undefined" : "undefined";
+  }
+  else if (type === "string") {
+    if (str.length > maxLength) {
+      return `"${str.slice(0, maxLength - 3)}..."`;
+    }
+    return `"${str}"`;
   }
   else if (Number.isNaN(value as number)) {
     return "NaN";
@@ -27,48 +34,49 @@ export function valueToString(value: unknown, options: ValueToStringOptions = {}
     str = `[${str}]`;
   }
 
-  if (str.length > 0 && str.length <= maxLength) {
+  if (type === "object") {
+    if (str.length > 0 && str.length <= maxLength && !str.startsWith("[object ")) {
+      canHavArticle = false;
+    }
+    else {
+      str = typeName(value);
+
+      if (str === "Object") {
+        let keys = Object.keys(value as object);
+
+        if (keys.length === 0) {
+          str = "{}";
+          canHavArticle = false;
+        }
+        else {
+          str = `{${keys}}`;
+          if (str.length <= maxLength) {
+            canHavArticle = false;
+          }
+          else {
+            str = "Object";
+          }
+        }
+      }
+    }
+  }
+  else if (str.length > 0 && str.length <= maxLength) {
     // tslint:disable-next-line: switch-default
     switch (type) {
-      case "string":
-        return `"${str}"`;
-
       case "number":
       case "bigint":
       case "function":
         return str;
 
       case "boolean":
-      case "object":
         canHavArticle = false;
-    }
-  }
-  else if (type === "object") {
-    str = typeName(value);
-
-    if (str === "Object") {
-      let keys = Object.keys(value as object);
-
-      if (keys.length === 0) {
-        str = "{}";
-        canHavArticle = false;
-      }
-      else {
-        str = `{${keys}}`;
-        if (str.length <= maxLength) {
-          canHavArticle = false;
-        }
-        else {
-          str = "Object";
-        }
-      }
     }
   }
   else {
     str = type;
   }
 
-  if (options.article && canHavArticle) {
+  if (article && canHavArticle) {
     let firstLetter = str[0].toLowerCase();
 
     if (vowels.includes(firstLetter)) {
@@ -79,7 +87,7 @@ export function valueToString(value: unknown, options: ValueToStringOptions = {}
     }
   }
 
-  if (options.capitalize) {
+  if (capitalize) {
     str = str[0].toUpperCase() + str.slice(1);
   }
 
@@ -90,6 +98,13 @@ export function valueToString(value: unknown, options: ValueToStringOptions = {}
  * Options for the `valueToString()` function.
  */
 export interface ValueToStringOptions {
+  /**
+   * The maximum length of a stringified value before its type is used instead.
+   *
+   * Defaults to `25`.
+   */
+  maxLength?: number;
+
   /**
    * Indicates whether the value string should be capitalized if applicable
    * (e.g. "Object" instead of "object").
