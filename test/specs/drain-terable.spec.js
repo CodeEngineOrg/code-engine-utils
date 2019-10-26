@@ -1,6 +1,6 @@
 "use strict";
 
-const { drainIterable } = require("../../lib");
+const { drainIterable } = require("../../");
 const { assert, expect } = require("chai");
 const delayed = require("../utils/delayed");
 const sinon = require("sinon");
@@ -98,9 +98,9 @@ describe("drainIterable() function", () => {
   it("should propagate errors from iterables", async () => {
     async function* source () {
       yield 1;
-      delayed();
+      await delayed();
       yield 2;
-      delayed();
+      await delayed();
       throw new TypeError("Boom!");
     }
 

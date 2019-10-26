@@ -1,6 +1,6 @@
 "use strict";
 
-const { normalizeFileInfo } = require("../../lib");
+const { normalizeFileInfo } = require("../../");
 const { expect } = require("chai");
 const path = require("path");
 
