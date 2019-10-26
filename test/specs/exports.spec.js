@@ -3,7 +3,7 @@
 const { expect } = require("chai");
 const commonJSExport = require("../../");
 const {
-  default: defaultExport, createFile, log, validate, valueToString, ConcurrentTasks,
+  default: defaultExport, createFile, normalizeFileInfo, log, validate, valueToString, ConcurrentTasks,
   iterate, iterateAll, drainIterable, joinIterables, splitIterable, IterableWriter
 } = require("../../");
 
@@ -16,6 +16,11 @@ describe("@code-engine/utils package exports", () => {
   it("should export the createFile function as a named export", () => {
     expect(createFile).to.be.a("function");
     expect(createFile.name).to.equal("createFile");
+  });
+
+  it("should export the normalizeFileInfo function as a named export", () => {
+    expect(normalizeFileInfo).to.be.a("function");
+    expect(normalizeFileInfo.name).to.equal("normalizeFileInfo");
   });
 
   it("should export the log function as a named export", () => {
@@ -71,6 +76,7 @@ describe("@code-engine/utils package exports", () => {
   it("should not export anything else", () => {
     expect(commonJSExport).to.have.keys(
       "createFile",
+      "normalizeFileInfo",
       "log",
       "validate",
       "valueToString",

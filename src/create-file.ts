@@ -1,4 +1,4 @@
-import { AnyContents, File, FileInfo } from "@code-engine/types";
+import { AnyContents, File, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
 import { ono } from "ono";
 import * as path from "path";
 import { valueToString } from "./value-to-string";
@@ -14,8 +14,49 @@ export function createFile(info: File | FileInfo, pluginName?: string): File {
     return info;
   }
 
-  let fileProps = createFileProps(info, pluginName);
+  info = normalizeFileInfo(info);
+  let fileProps = createFileProps(info as NormalizedFileInfo, pluginName);
   return Object.create(filePrototype, fileProps) as File;
+}
+
+
+/**
+ * Normalizes a `FileInfo` object so each of its fields is a known type.
+ */
+export function normalizeFileInfo(info: File | FileInfo): NormalizedFileInfo {
+  if (!info || typeof info !== "object" || typeof info.path !== "string") {
+    throw ono.type(`Invalid CodeEngine file: ${valueToString(info)}. Expected an object with at least a "path" property.`);
+  }
+
+  let normalized: NormalizedFileInfo = {
+    path: validatePath(info.path),
+  };
+
+  if (info.contents || info.text) {
+    normalized.contents = toBuffer(info.contents || info.text);
+  }
+
+  info.source && (normalized.source = String(info.source));
+  info.sourceMap && (normalized.sourceMap = info.sourceMap);
+  info.createdAt && (normalized.createdAt = info.createdAt);
+  info.modifiedAt && (normalized.modifiedAt = info.modifiedAt);
+  info.metadata && (normalized.metadata = info.metadata);
+
+  return normalized;
+}
+
+
+/**
+ * A normalized `FileInfo` object, where each field is a known type.
+ */
+export interface NormalizedFileInfo {
+  path: string;
+  source?: string;
+  sourceMap?: SourceMap;
+  createdAt?: Date;
+  modifiedAt?: Date;
+  metadata?: FileMetadata;
+  contents?: Buffer;
 }
 
 
@@ -89,19 +130,14 @@ const filePrototype = {
 /**
  * Creates the property descriptors for a `CodeEngineFile` instance.
  */
-function createFileProps(props: File | FileInfo | string, pluginName?: string): PropertyDescriptorMap {
-  if (!props || typeof props !== "object" || typeof props.path !== "string") {
-    throw ono.type(`Invalid CodeEngine file: ${valueToString(props)}. Expected an object with at least a "path" property.`);
-  }
-
-  let filePath = validatePath(props.path);
-  let { dir, name, ext } = path.parse(filePath);
-  let contents = toBuffer(props.contents === undefined ? props.text : props.contents);
-  let source = props.source ? String(props.source) : createSourceURL(filePath, pluginName);
-  let sourceMap = props.sourceMap || undefined;
-  let createdAt = props.createdAt || new Date();
-  let modifiedAt = props.modifiedAt || new Date();
-  let metadata = props.metadata || {};
+function createFileProps(info: NormalizedFileInfo, pluginName?: string): PropertyDescriptorMap {
+  let { dir, name, ext } = path.parse(info.path);
+  let contents = info.contents || Buffer.alloc(0);
+  let source = info.source || createSourceURL(info.path, pluginName);
+  let sourceMap = info.sourceMap || undefined;
+  let createdAt = info.createdAt || new Date();
+  let modifiedAt = info.modifiedAt || new Date();
+  let metadata = info.metadata || {};
 
   return {
     [_private]: { value: { dir, name, ext, contents }},

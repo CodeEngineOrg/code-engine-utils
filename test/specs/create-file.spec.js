@@ -271,6 +271,15 @@ describe("createFile() function", () => {
     expect(invalidArg).to.throw("Invalid CodeEngine file: 12345. Expected an object with at least a \"path\" property.");
   });
 
+  it("should throw an error if called with an empty path", () => {
+    function invalidPath () {
+      return createFile({ path: "" });
+    }
+
+    expect(invalidPath).to.throw(Error);
+    expect(invalidPath).to.throw("The file path must be specified.");
+  });
+
   it("should throw an error if called with an invalid path", () => {
     function invalidPath () {
       return createFile({ path: 12345 });
