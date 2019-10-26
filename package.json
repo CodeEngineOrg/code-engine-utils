@@ -1,6 +1,6 @@
 {
   "name": "@code-engine/utils",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.9",
   "description": "Internal CodeEngine utilities",
   "keywords": [
     "code-engine"
@@ -46,7 +46,7 @@
     "@types/type-name": "^1.0.27",
     "chai": "^4.2.0",
     "coveralls": "^3.0.7",
-    "eslint": "^6.3.0",
+    "eslint": "^6.6.0",
     "eslint-config-modular": "^7.0.0",
     "mocha": "^6.2.2",
     "npm-check": "^5.9.0",
