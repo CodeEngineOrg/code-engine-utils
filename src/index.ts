@@ -1,5 +1,6 @@
 export { ConcurrentTasks } from "./concurrent-tasks";
 export { createFile, NormalizedFileInfo, normalizeFileInfo } from "./create-file";
+export { debounceIterable } from "./debounce-iterable";
 export { drainIterable } from "./drain-iterable";
 export { IterableWriter } from "./iterable-writer";
 export { iterate } from "./iterate";
