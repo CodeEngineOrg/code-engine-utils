@@ -9,14 +9,12 @@ const _private = Symbol("private");
 /**
  * Creats a CodeEngine `File` object.
  */
-export function createFile(info: File | FileInfo, pluginName?: string): File;
-export function createFile(path: string, pluginName?: string): File;
-export function createFile(arg: File | FileInfo | string, pluginName?: string): File {
-  if (isFile(arg)) {
-    return arg;
+export function createFile(info: File | FileInfo, pluginName?: string): File {
+  if (isFile(info)) {
+    return info;
   }
 
-  let fileProps = createFileProps(arg, pluginName);
+  let fileProps = createFileProps(info, pluginName);
   return Object.create(filePrototype, fileProps) as File;
 }
 
@@ -92,10 +90,6 @@ const filePrototype = {
  * Creates the property descriptors for a `CodeEngineFile` instance.
  */
 function createFileProps(props: File | FileInfo | string, pluginName?: string): PropertyDescriptorMap {
-  if (typeof props === "string") {
-    props = { path: props };
-  }
-
   if (!props || typeof props !== "object" || typeof props.path !== "string") {
     throw ono.type(`Invalid CodeEngine file: ${valueToString(props)}. Expected an object with at least a "path" property.`);
   }

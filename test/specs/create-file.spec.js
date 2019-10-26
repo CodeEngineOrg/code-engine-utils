@@ -9,12 +9,7 @@ describe("createFile() function", () => {
 
   it("can be called with new", () => {
     // eslint-disable-next-line new-cap
-    let file = new createFile("path/to/my/file.txt");
-    expect(file).to.satisfy(isValidFile);
-  });
-
-  it("can be called with a path string", () => {
-    let file = createFile("path/to/my/file.txt");
+    let file = new createFile({ path: "path/to/my/file.txt" });
     expect(file).to.satisfy(isValidFile);
   });
 
@@ -205,11 +200,11 @@ describe("createFile() function", () => {
   });
 
   it("should support toString()", () => {
-    expect(createFile("file.txt").toString()).to.equal("file.txt");
-    expect(Object.prototype.toString.call(createFile("file.txt"))).to.equal("[object File]");
+    expect(createFile({ path: "file.txt" }).toString()).to.equal("file.txt");
+    expect(Object.prototype.toString.call(createFile({ path: "file.txt" }))).to.equal("[object File]");
 
-    expect(createFile("path/to/my/file.txt").toString()).to.equal(path.normalize("path/to/my/file.txt"));
-    expect(Object.prototype.toString.call(createFile("path/to/my/file.txt"))).to.equal("[object File]");
+    expect(createFile({ path: "path/to/my/file.txt" }).toString()).to.equal(path.normalize("path/to/my/file.txt"));
+    expect(Object.prototype.toString.call(createFile({ path: "path/to/my/file.txt" }))).to.equal("[object File]");
   });
 
   it("should support JSON.stringify()", () => {
@@ -264,7 +259,7 @@ describe("createFile() function", () => {
     }
 
     expect(emptyString).to.throw(Error);
-    expect(emptyString).to.throw("The file path must be specified.");
+    expect(emptyString).to.throw("Invalid CodeEngine file: string. Expected an object with at least a \"path\" property.");
   });
 
   it("should throw an error if called with an invalid argument", () => {

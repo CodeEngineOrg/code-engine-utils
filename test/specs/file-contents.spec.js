@@ -7,7 +7,7 @@ const isValidFile = require("../utils/is-valid-file");
 describe("File contents", () => {
 
   it("should default to an empty buffer", () => {
-    let file = createFile("file.txt");
+    let file = createFile({ path: "file.txt" });
     expect(file).to.satisfy(isValidFile);
     expect(file.contents).to.be.an.instanceOf(Buffer);
     expect(file.contents).to.have.lengthOf(0);
@@ -136,7 +136,7 @@ describe("File contents", () => {
   });
 
   it("can set the content property to a buffer", () => {
-    let file = createFile("file.txt");
+    let file = createFile({ path: "file.txt" });
     file.contents = Buffer.from("hello, world");
 
     expect(file).to.satisfy(isValidFile);
@@ -146,7 +146,7 @@ describe("File contents", () => {
   });
 
   it("can set the content property to a string", () => {
-    let file = createFile("file.txt");
+    let file = createFile({ path: "file.txt" });
     file.contents = "hello, world";
 
     expect(file).to.satisfy(isValidFile);
@@ -156,7 +156,7 @@ describe("File contents", () => {
   });
 
   it("can set the content property to a Uint8Array", () => {
-    let file = createFile("file.txt");
+    let file = createFile({ path: "file.txt" });
     file.contents = new Uint8Array([104, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100]);
 
     expect(file).to.satisfy(isValidFile);
@@ -166,7 +166,7 @@ describe("File contents", () => {
   });
 
   it("can set the content property to an ArrayBuffer", () => {
-    let file = createFile("file.txt");
+    let file = createFile({ path: "file.txt" });
     let typedArray = new Uint8Array([104, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100]);
     file.contents = typedArray.buffer;
 
@@ -177,7 +177,7 @@ describe("File contents", () => {
   });
 
   it("can set the text property to a string", () => {
-    let file = createFile("file.txt");
+    let file = createFile({ path: "file.txt" });
     file.text = "hello, world";
 
     expect(file).to.satisfy(isValidFile);

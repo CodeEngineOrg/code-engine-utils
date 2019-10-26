@@ -8,7 +8,7 @@ const isValidFile = require("../utils/is-valid-file");
 describe("File path properties", () => {
 
   it("can initialize the path properties from a string", () => {
-    let file = createFile("path/to/my/file.txt");
+    let file = createFile({ path: "path/to/my/file.txt" });
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://plugin/path/to/my/file.txt");
     expect(file.path).to.equal(path.normalize("path/to/my/file.txt"));
@@ -28,7 +28,7 @@ describe("File path properties", () => {
   });
 
   it("can create a file in the root directory", () => {
-    let file = createFile("my-root-file.html");
+    let file = createFile({ path: "my-root-file.html" });
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://plugin/my-root-file.html");
     expect(file.path).to.equal("my-root-file.html");
@@ -38,7 +38,7 @@ describe("File path properties", () => {
   });
 
   it("can create a file without an extension", () => {
-    let file = createFile("My File");
+    let file = createFile({ path: "My File" });
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://plugin/My%20File");
     expect(file.path).to.equal("My File");
@@ -46,7 +46,7 @@ describe("File path properties", () => {
     expect(file.name).to.equal("My File");
     expect(file.extension).to.equal("");
 
-    let file2 = createFile("My Directory/My File");
+    let file2 = createFile({ path: "My Directory/My File" });
     expect(file2).to.satisfy(isValidFile);
     expect(file2.source).to.equal("code-engine://plugin/My%20Directory/My%20File");
     expect(file2.path).to.equal(path.normalize("My Directory/My File"));
@@ -56,7 +56,7 @@ describe("File path properties", () => {
   });
 
   it("can create a file with multiple extensions", () => {
-    let file = createFile("index.min.js.map");
+    let file = createFile({ path: "index.min.js.map" });
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://plugin/index.min.js.map");
     expect(file.path).to.equal("index.min.js.map");
@@ -64,7 +64,7 @@ describe("File path properties", () => {
     expect(file.name).to.equal("index.min.js.map");
     expect(file.extension).to.equal(".map");
 
-    let file2 = createFile("some.directory/index.min.js.map");
+    let file2 = createFile({ path: "some.directory/index.min.js.map" });
     expect(file2).to.satisfy(isValidFile);
     expect(file2.source).to.equal("code-engine://plugin/some.directory/index.min.js.map");
     expect(file2.path).to.equal(path.normalize("some.directory/index.min.js.map"));
@@ -74,7 +74,7 @@ describe("File path properties", () => {
   });
 
   it("can create a dotfile", () => {
-    let file = createFile(".gitignore");
+    let file = createFile({ path: ".gitignore" });
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://plugin/.gitignore");
     expect(file.path).to.equal(".gitignore");
@@ -82,7 +82,7 @@ describe("File path properties", () => {
     expect(file.name).to.equal(".gitignore");
     expect(file.extension).to.equal("");
 
-    let file2 = createFile(".some/.directory/.gitignore");
+    let file2 = createFile({ path: ".some/.directory/.gitignore" });
     expect(file2).to.satisfy(isValidFile);
     expect(file2.source).to.equal("code-engine://plugin/.some/.directory/.gitignore");
     expect(file2.path).to.equal(path.normalize(".some/.directory/.gitignore"));
@@ -120,7 +120,7 @@ describe("File path properties", () => {
   });
 
   it("should use the plugin name for the source URL", () => {
-    let file = createFile("path/to/my/file.html", "My Custom Plugin");
+    let file = createFile({ path: "path/to/my/file.html" }, "My Custom Plugin");
 
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://My-Custom-Plugin/path/to/my/file.html");
@@ -148,7 +148,7 @@ describe("File path properties", () => {
   });
 
   it("should update all path properties when the path is changed", () => {
-    let file = createFile("path/to/my/file.njk");
+    let file = createFile({ path: "path/to/my/file.njk" });
     expect(file.path).to.equal(path.normalize("path/to/my/file.njk"));
     expect(file.dir).to.equal(path.normalize("path/to/my"));
     expect(file.name).to.equal("file.njk");
@@ -168,7 +168,7 @@ describe("File path properties", () => {
   });
 
   it("should update all path properties when the dir is changed", () => {
-    let file = createFile("path/to/my/file.njk");
+    let file = createFile({ path: "path/to/my/file.njk" });
     expect(file.path).to.equal(path.normalize("path/to/my/file.njk"));
     expect(file.dir).to.equal(path.normalize("path/to/my"));
     expect(file.name).to.equal("file.njk");
@@ -188,7 +188,7 @@ describe("File path properties", () => {
   });
 
   it("should update all path properties when the name is changed", () => {
-    let file = createFile("path/to/my/file.njk");
+    let file = createFile({ path: "path/to/my/file.njk" });
     expect(file.path).to.equal(path.normalize("path/to/my/file.njk"));
     expect(file.dir).to.equal(path.normalize("path/to/my"));
     expect(file.name).to.equal("file.njk");
@@ -202,7 +202,7 @@ describe("File path properties", () => {
   });
 
   it("should update all path properties when the extension is changed", () => {
-    let file = createFile("path/to/my/file.njk");
+    let file = createFile({ path: "path/to/my/file.njk" });
     expect(file.path).to.equal(path.normalize("path/to/my/file.njk"));
     expect(file.dir).to.equal(path.normalize("path/to/my"));
     expect(file.name).to.equal("file.njk");
@@ -233,7 +233,7 @@ describe("File path properties", () => {
   if (process.platform === "win32") {
     it("should throw an error if called with an absolute Windows path", () => {
       function absolutePath () {
-        return createFile("C:\\my\\file.txt");
+        return createFile({ path: "C:\\my\\file.txt" });
       }
 
       expect(absolutePath).to.throw(Error);
@@ -242,7 +242,7 @@ describe("File path properties", () => {
   }
 
   it("should throw an error if path is set to an absolute path", () => {
-    let file = createFile("file.njk");
+    let file = createFile({ path: "file.njk" });
 
     function absolutePath () {
       file.path = "/file.njk";
@@ -253,7 +253,7 @@ describe("File path properties", () => {
   });
 
   it("should throw an error if dir is set to an absolute path", () => {
-    let file = createFile("file.njk");
+    let file = createFile({ path: "file.njk" });
 
     function absolutePath () {
       file.dir = "/root";
@@ -265,7 +265,7 @@ describe("File path properties", () => {
 
   if (process.platform === "win32") {
     it("should throw an error if path is set to an absolute Windows path", () => {
-      let file = createFile("file.njk");
+      let file = createFile({ path: "file.njk" });
 
       function absolutePath () {
         file.path = "C:\\file.njk";
@@ -276,7 +276,7 @@ describe("File path properties", () => {
     });
 
     it("should throw an error if dir is set to an absolute Windows path", () => {
-      let file = createFile("file.njk");
+      let file = createFile({ path: "file.njk" });
 
       function absolutePath () {
         file.dir = "C:\\root";
