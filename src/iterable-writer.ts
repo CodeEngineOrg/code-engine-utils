@@ -118,8 +118,7 @@ export class IterableWriter<T> {
       return { value };
     }
     else if (this._allDone()) {
-      let resolveEnd = await this._pendingEnd.resolve;
-      resolveEnd();
+      await this._pendingEnd.resolve();
       return { done: true, value: undefined };
     }
     else {
@@ -141,23 +140,18 @@ export class IterableWriter<T> {
         let pendingRead = this._pendingReads.shift()!;
         let getValue = this._values.shift()!;
 
-        let resolve = await pendingRead.resolve;
-        let reject = await pendingRead.reject;
-
         try {
           let value = getValue();
-          resolve({ value });
+          await pendingRead.resolve({ value });
         }
         catch (error) {
-          reject(error as Error);
+          await pendingRead.reject(error as Error);
         }
       }
       else if (this._allDone()) {
         let pendingRead = this._pendingReads.shift()!;
-        let resolve = await pendingRead.resolve;
-        let resolveEnd = await this._pendingEnd.resolve;
-        resolve({ done: true, value: undefined });
-        resolveEnd();
+        await pendingRead.resolve({ done: true, value: undefined });
+        await this._pendingEnd.resolve();
       }
       else {
         break;

@@ -11,8 +11,14 @@ export function pending<T>(): Pending<T> {
 
   return {
     promise,
-    resolve: new Promise((r) => r(resolve)),
-    reject: new Promise((r) => r(reject)),
+    async resolve(result) {
+      await Promise.resolve();
+      resolve(result);
+    },
+    async reject(reason: Error) {
+      await Promise.resolve();
+      reject(reason);
+    }
   };
 }
 
@@ -21,16 +27,17 @@ export function pending<T>(): Pending<T> {
  */
 export interface Pending<T> {
   promise: Promise<T>;
-  resolve: Promise<Resolve<T>>;
-  reject: Promise<Reject>;
+
+  /**
+   * Resolves the promise with the given value.
+   */
+  resolve(result: T | PromiseLike<T>): Promise<void>;
+
+  /**
+   * Rejects the promise with the given reason.
+   */
+  reject(reason: Error): Promise<void>;
 }
 
-/**
- * Resolves a Promise
- */
-export type Resolve<T> = (result: T | PromiseLike<T>) => void;
-
-/**
- * Rejects a promise
- */
-export type Reject = (error: Error) => void;
+type Resolve<T> = (result: T | PromiseLike<T>) => void;
+type Reject = (error: Error) => void;
