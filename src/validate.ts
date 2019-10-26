@@ -6,21 +6,43 @@ import { valueToString } from "./value-to-string";
  */
 export const validate = {
   /**
-   * Validates the given concurrency value and returns it, or the default value, or throws an error.
+   * Validates a numeric value (positive or negative, integer or float).
    */
-  concurrency(concurrency: number | undefined, defaultValue?: number): number {
-    if (concurrency === undefined) {
-      concurrency = defaultValue;
+  number(fieldName: string, value: number | undefined, defaultValue?: number): number {
+    if (value === undefined) {
+      value = defaultValue;
     }
 
-    if (typeof concurrency !== "number") {
-      let value = valueToString(concurrency, { article: true });
-      throw ono.type(`Concurrency must be a positive integer, not ${value}.`);
-    }
-    if (!concurrency || concurrency < 1 || !Number.isInteger(concurrency)) {
-      throw ono.range(`Concurrency must be a positive integer, not ${concurrency}.`);
+    if (typeof value !== "number" || Number.isNaN(value)) {
+      throw ono.type(`Invalid ${fieldName} value: ${valueToString(value)}. Expected a number.`);
     }
 
-    return concurrency;
-  }
+    return value;
+  },
+
+  /**
+   * Validates an integer value (positive or negative).
+   */
+  integer(fieldName: string, value: number | undefined, defaultValue?: number): number {
+    value = validate.number(fieldName, value, defaultValue);
+
+    if (!Number.isInteger(value)) {
+      throw ono.type(`Invalid ${fieldName} value: ${valueToString(value)}. Expected an integer.`);
+    }
+
+    return value;
+  },
+
+  /**
+   * Validates a positive integer value.
+   */
+  positiveInteger(fieldName: string, value: number | undefined, defaultValue?: number): number {
+    value = validate.integer(fieldName, value, defaultValue);
+
+    if (value < 1) {
+      throw ono.range(`Invalid ${fieldName} value: ${valueToString(value)}. Expected a positive integer.`);
+    }
+
+    return value;
+  },
 };

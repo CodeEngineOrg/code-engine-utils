@@ -15,7 +15,7 @@ export class ConcurrentTasks {
   private _tasks = new Map<number, Promise<number>>();
 
   public constructor(concurrency: number) {
-    this._concurrency = validate.concurrency(concurrency);
+    this._concurrency = validate.positiveInteger("concurrency", concurrency);
   }
 
   /**

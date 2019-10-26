@@ -29,8 +29,10 @@ describe("@code-engine/utils package exports", () => {
   });
 
   it("should export the validate object as a named export", () => {
-    expect(validate).to.be.an("object").with.keys("concurrency");
-    expect(validate.concurrency).to.be.a("function");
+    expect(validate).to.be.an("object").with.keys("number", "integer", "positiveInteger");
+    expect(validate.number).to.be.a("function");
+    expect(validate.integer).to.be.a("function");
+    expect(validate.positiveInteger).to.be.a("function");
   });
 
   it("should export the valueToString function as a named export", () => {
