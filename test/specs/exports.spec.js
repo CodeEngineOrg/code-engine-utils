@@ -29,10 +29,10 @@ describe("@code-engine/utils package exports", () => {
   });
 
   it("should export the validate object as a named export", () => {
-    expect(validate).to.be.an("object").with.keys("number", "integer", "positiveInteger");
-    expect(validate.number).to.be.a("function");
-    expect(validate.integer).to.be.a("function");
-    expect(validate.positiveInteger).to.be.a("function");
+    expect(validate).to.be.an("object");
+    for (let key of Object.keys(validate)) {
+      expect(validate[key]).to.be.a("function").with.property("name", key);
+    }
   });
 
   it("should export the valueToString function as a named export", () => {

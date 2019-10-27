@@ -1,5 +1,6 @@
 import { ono } from "ono";
 import { valueToString } from "./value-to-string";
+import { valuesToString } from "./values-to-string";
 
 /**
  * CodeEngine validation functions
@@ -44,5 +45,23 @@ export const validate = {
     }
 
     return value;
+  },
+
+  /**
+   * Validates a value that is one of the specified values.
+   */
+  oneOf<T>(fieldName: string, value: T | undefined, values: T[], defaultValue?: T): T {
+    if (value === undefined) {
+      value = defaultValue;
+    }
+
+    if (!values.includes(value as T)) {
+      throw ono.type(
+        `Invalid ${fieldName} value: ${valueToString(value)}. ` +
+        `Expected ${valuesToString(values, { conjunction: "or" })}.`
+      );
+    }
+
+    return value as T;
   },
 };
