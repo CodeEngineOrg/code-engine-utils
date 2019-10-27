@@ -1,6 +1,7 @@
-import { AnyContents, File, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
+import { AnyContents, ChangedFile, ChangedFileInfo, File, FileChange, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
 import { ono } from "ono";
 import * as path from "path";
+import { validate } from "./validate";
 import { valueToString } from "./value-to-string";
 
 const _private = Symbol("private");
@@ -17,6 +18,16 @@ export function createFile(info: File | FileInfo, pluginName?: string): File {
   info = normalizeFileInfo(info);
   let fileProps = createFileProps(info as NormalizedFileInfo, pluginName);
   return Object.create(filePrototype, fileProps) as File;
+}
+
+
+/**
+ * Creats a CodeEngine `ChangedFile` object.
+ */
+export function createChangedFile(info: ChangedFile | ChangedFileInfo, pluginName?: string): ChangedFile {
+  let file = createFile(info) as ChangedFile;
+  file.change = validate.oneOf("change", info.change, [FileChange.Created, FileChange.Modified, FileChange.Deleted]);
+  return file;
 }
 
 
