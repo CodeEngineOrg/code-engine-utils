@@ -120,4 +120,12 @@ export interface ValueToStringOptions {
    * Defaults to `false`.
    */
   article?: boolean;
+
+  /**
+   * The string used to join a list of values when calling `valuesToString()`.
+   * This is usually either "and" or "or".
+   *
+   * Defautls to "and".
+   */
+  conjunction?: string;
 }

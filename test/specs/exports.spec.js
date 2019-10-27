@@ -40,6 +40,11 @@ describe("@code-engine/utils package exports", () => {
     expect(valueToString.name).to.equal("valueToString");
   });
 
+  it("should export the valuesToString function as a named export", () => {
+    expect(valuesToString).to.be.a("function");
+    expect(valuesToString.name).to.equal("valuesToString");
+  });
+
   it("should export the ConcurrentTasks class as a named export", () => {
     expect(ConcurrentTasks).to.be.a("function");
     expect(ConcurrentTasks.name).to.equal("ConcurrentTasks");
@@ -87,6 +92,7 @@ describe("@code-engine/utils package exports", () => {
       "log",
       "validate",
       "valueToString",
+      "valuesToString",
       "ConcurrentTasks",
       "iterate",
       "iterateAll",

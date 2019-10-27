@@ -9,4 +9,5 @@ export { joinIterables } from "./join-iterables";
 export { log } from "./log";
 export { splitIterable } from "./split-iterable";
 export { validate } from "./validate";
-export { valueToString } from "./value-to-string";
+export { valueToString, ValueToStringOptions } from "./value-to-string";
+export { valuesToString } from "./values-to-string";
