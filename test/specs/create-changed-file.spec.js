@@ -259,4 +259,22 @@ describe("createChangedFile() function", () => {
     expect(invalidPath).to.throw("Invalid CodeEngine file: {path}. Expected an object with at least a \"path\" property.");
   });
 
+  it("should throw an error if called without a change type", () => {
+    function invalidPath () {
+      return createChangedFile({ path: "file1.txt" });
+    }
+
+    expect(invalidPath).to.throw(TypeError);
+    expect(invalidPath).to.throw('Invalid file change value: undefined. Expected "created", "modified", or "deleted".');
+  });
+
+  it("should throw an error if called with an invalid change type", () => {
+    function invalidPath () {
+      return createChangedFile({ path: "file1.txt", change: 12345 });
+    }
+
+    expect(invalidPath).to.throw(TypeError);
+    expect(invalidPath).to.throw('Invalid file change value: 12345. Expected "created", "modified", or "deleted".');
+  });
+
 });

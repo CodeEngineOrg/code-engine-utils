@@ -26,7 +26,8 @@ export function createFile(info: File | FileInfo, pluginName?: string): File {
  */
 export function createChangedFile(info: ChangedFile | ChangedFileInfo, pluginName?: string): ChangedFile {
   let file = createFile(info) as ChangedFile;
-  file.change = validate.oneOf("change", info.change, [FileChange.Created, FileChange.Modified, FileChange.Deleted]);
+  file.change = validate.oneOf("file change", info.change,
+    [FileChange.Created, FileChange.Modified, FileChange.Deleted]);
   return file;
 }
 
