@@ -265,7 +265,7 @@ describe("createChangedFile() function", () => {
     }
 
     expect(invalidPath).to.throw(TypeError);
-    expect(invalidPath).to.throw('Invalid file change value: undefined. Expected "created", "modified", or "deleted".');
+    expect(invalidPath).to.throw('The type of file change must be specified ("created", "modified", and "deleted").');
   });
 
   it("should throw an error if called with an invalid change type", () => {
@@ -274,7 +274,7 @@ describe("createChangedFile() function", () => {
     }
 
     expect(invalidPath).to.throw(TypeError);
-    expect(invalidPath).to.throw('Invalid file change value: 12345. Expected "created", "modified", or "deleted".');
+    expect(invalidPath).to.throw('Invalid file change: 12345. Expected "created", "modified", or "deleted".');
   });
 
 });
