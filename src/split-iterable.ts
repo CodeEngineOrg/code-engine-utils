@@ -15,7 +15,7 @@ export function splitIterable<T>(source: AsyncIterable<T>, concurrency: number):
     throw ono.type(`${value} is not an async iterator.`);
   }
 
-  validate.positiveInteger("concurrency", concurrency);
+  validate.positiveInteger(concurrency, "concurrency");
 
   let iterator = source[Symbol.asyncIterator]();
   return [...Array(concurrency)].map(() => createIterable<T>(iterator));
