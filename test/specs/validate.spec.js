@@ -5,6 +5,129 @@ const { expect } = require("chai");
 
 describe("Validation functions", () => {
 
+  describe("validate.string()", () => {
+    it("should validate empty strings", () => {
+      expect(validate.string("name", "")).to.equal("");
+    });
+
+    it("should validate whitespace strings", () => {
+      expect(validate.string("name", " ")).to.equal(" ");
+      expect(validate.string("name", "\t")).to.equal("\t");
+      expect(validate.string("name", "\n")).to.equal("\n");
+      expect(validate.string("name", "\t \n")).to.equal("\t \n");
+    });
+
+    it("should validate text strings", () => {
+      expect(validate.string("name", "Hello, world")).to.equal("Hello, world");
+    });
+
+    it("should validate numeric strings", () => {
+      expect(validate.string("name", "0")).to.equal("0");
+      expect(validate.string("name", "123")).to.equal("123");
+      expect(validate.string("name", "Infinity")).to.equal("Infinity");
+    });
+
+    it("should validate default values", () => {
+      expect(validate.string("name", undefined, "")).to.equal("");
+      expect(validate.string("name", undefined, "\t \n")).to.equal("\t \n");
+      expect(validate.string("name", undefined, "Hello, world")).to.equal("Hello, world");
+      expect(validate.string("name", undefined, "123")).to.equal("123");
+    });
+
+    it("should throw an error for invalid values", () => {
+      function invalid (value) {
+        return () => {
+          validate.string("name", value);
+        };
+      }
+
+      expect(invalid(NaN)).to.throw(TypeError, "Invalid name value: NaN. Expected a string.");
+      expect(invalid(null)).to.throw(TypeError, "Invalid name value: null. Expected a string.");
+      expect(invalid(undefined)).to.throw(TypeError, "Invalid name value: undefined. Expected a string.");
+      expect(invalid(0)).to.throw(TypeError, "Invalid name value: 0. Expected a string.");
+      expect(invalid(Number.MAX_VALUE)).to.throw(TypeError, "Invalid name value: 1.7976931348623157e+308. Expected a string.");
+      expect(invalid(String)).to.throw(TypeError, "Invalid name value: function. Expected a string.");
+      expect(invalid(new Date())).to.throw(TypeError, "Invalid name value: Date. Expected a string.");
+      expect(invalid(/1234/)).to.throw(TypeError, "Invalid name value: /1234/. Expected a string.");
+      expect(invalid({ foo: "bar" })).to.throw(TypeError, "Invalid name value: {foo}. Expected a string.");
+      expect(invalid([1, 2, 3])).to.throw(TypeError, "Invalid name value: [1,2,3]. Expected a string.");
+    });
+
+    it("should throw an error for invalid defaults", () => {
+      function invalidDefault (defaultValue) {
+        return () => {
+          validate.string("name", undefined, defaultValue);
+        };
+      }
+
+      expect(invalidDefault(NaN)).to.throw(TypeError, "Invalid name value: NaN. Expected a string.");
+      expect(invalidDefault(null)).to.throw(TypeError, "Invalid name value: null. Expected a string.");
+      expect(invalidDefault(undefined)).to.throw(TypeError, "Invalid name value: undefined. Expected a string.");
+      expect(invalidDefault(0)).to.throw(TypeError, "Invalid name value: 0. Expected a string.");
+      expect(invalidDefault(Number.MAX_VALUE)).to.throw(TypeError, "Invalid name value: 1.7976931348623157e+308. Expected a string.");
+      expect(invalidDefault(String)).to.throw(TypeError, "Invalid name value: function. Expected a string.");
+      expect(invalidDefault(new Date())).to.throw(TypeError, "Invalid name value: Date. Expected a string.");
+      expect(invalidDefault(/1234/)).to.throw(TypeError, "Invalid name value: /1234/. Expected a string.");
+      expect(invalidDefault({ foo: "bar" })).to.throw(TypeError, "Invalid name value: {foo}. Expected a string.");
+      expect(invalidDefault([1, 2, 3])).to.throw(TypeError, "Invalid name value: [1,2,3]. Expected a string.");
+    });
+  });
+
+  describe("validate.minLength()", () => {
+    it("should validate non-empty strings by default", () => {
+      expect(validate.minLength("name", " ")).to.equal(" ");
+      expect(validate.minLength("name", "\n")).to.equal("\n");
+      expect(validate.minLength("name", "abc")).to.equal("abc");
+      expect(validate.minLength("name", "Hello, world")).to.equal("Hello, world");
+    });
+
+    it("should validate strings that meet the minimum", () => {
+      expect(validate.minLength("name", " ", 1)).to.equal(" ");
+      expect(validate.minLength("name", "hello", 3)).to.equal("hello");
+      expect(validate.minLength("name", "hello", 5)).to.equal("hello");
+    });
+
+    it("should validate default values", () => {
+      expect(validate.minLength("name", undefined, 1, " ")).to.equal(" ");
+      expect(validate.minLength("name", undefined, 3, "hello")).to.equal("hello");
+      expect(validate.minLength("name", undefined, 5, "hello")).to.equal("hello");
+    });
+
+    it("should throw an error for empty strings by default", () => {
+      function empty (value) {
+        return () => {
+          validate.minLength("name", value);
+        };
+      }
+
+      expect(empty("")).to.throw(TypeError, 'Invalid name value: "". It cannot be empty.');
+    });
+
+    it("should throw an error for strings that don't meet the minimum", () => {
+      function tooShort (value, minLength) {
+        return () => {
+          validate.minLength("name", value, minLength);
+        };
+      }
+
+      expect(tooShort(" ", 2)).to.throw(TypeError, 'Invalid name value: " ". It should be at least 2 characters.');
+      expect(tooShort("abc", 5)).to.throw(TypeError, 'Invalid name value: "abc". It should be at least 5 characters.');
+      expect(tooShort("Hello, world!", 100)).to.throw(TypeError, 'Invalid name value: "Hello, world!". It should be at least 100 characters.');
+    });
+
+    it("should throw an error for defaults that don't meet the minimum", () => {
+      function invalidDefault (defaultValue, minLength) {
+        return () => {
+          validate.minLength("name", undefined, minLength, defaultValue);
+        };
+      }
+
+      expect(invalidDefault(" ", 2)).to.throw(TypeError, 'Invalid name value: " ". It should be at least 2 characters.');
+      expect(invalidDefault("abc", 5)).to.throw(TypeError, 'Invalid name value: "abc". It should be at least 5 characters.');
+      expect(invalidDefault("Hello, world!", 100)).to.throw(TypeError, 'Invalid name value: "Hello, world!". It should be at least 100 characters.');
+    });
+  });
+
   describe("validate.number()", () => {
     it("should validate numbers", () => {
       expect(validate.number("latitude", 1.0)).to.equal(1);

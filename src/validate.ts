@@ -7,6 +7,39 @@ import { valuesToString } from "./values-to-string";
  */
 export const validate = {
   /**
+   * Validates a string value (including empty strings).
+   */
+  string(fieldName: string, value: string | undefined, defaultValue?: string): string {
+    if (value === undefined) {
+      value = defaultValue;
+    }
+
+    if (typeof value !== "string") {
+      throw ono.type(`Invalid ${fieldName} value: ${valueToString(value)}. Expected a string.`);
+    }
+
+    return value;
+  },
+
+  /**
+   * Validates a string with at least the specified number of characters.
+   */
+  minLength(fieldName: string, value: string | undefined, minLength = 1, defaultValue?: string): string {
+    value = validate.string(fieldName, value, defaultValue);
+
+    if (value.length < minLength) {
+      if (minLength === 1) {
+        throw ono.type(`Invalid ${fieldName} value: ${valueToString(value)}. It cannot be empty.`);
+      }
+      else {
+        throw ono.type(`Invalid ${fieldName} value: ${valueToString(value)}. It should be at least ${minLength} characters.`);
+      }
+    }
+
+    return value;
+  },
+
+  /**
    * Validates a numeric value (positive or negative, integer or float).
    */
   number(fieldName: string, value: number | undefined, defaultValue?: number): number {
