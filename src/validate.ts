@@ -24,7 +24,7 @@ export const validate = {
   /**
    * Validates a string value (including empty strings).
    */
-  string(value: string | undefined, fieldName = "value", defaultValue?: string): string {
+  string<T extends string>(value: T | undefined, fieldName = "value", defaultValue?: T): T {
     value = validate.hasValue(value, fieldName, defaultValue);
 
     if (typeof value !== "string") {
@@ -37,7 +37,7 @@ export const validate = {
   /**
    * Validates a string with at least the specified number of characters.
    */
-  minLength(value: string | undefined, minLength = 1, fieldName = "value", defaultValue?: string): string {
+  minLength<T extends string>(value: T | undefined, minLength = 1, fieldName = "value", defaultValue?: T): T {
     value = validate.string(value, fieldName, defaultValue);
 
     if (value.length < minLength) {
@@ -55,7 +55,7 @@ export const validate = {
   /**
    * Validates a numeric value (positive or negative, integer or float).
    */
-  number(value: number | undefined, fieldName = "value", defaultValue?: number): number {
+  number<T extends number>(value: T | undefined, fieldName = "value", defaultValue?: T): T {
     value = validate.hasValue(value, fieldName, defaultValue);
 
     if (typeof value !== "number" || Number.isNaN(value)) {
@@ -68,7 +68,7 @@ export const validate = {
   /**
    * Validates an integer value (positive or negative).
    */
-  integer(value: number | undefined, fieldName = "value", defaultValue?: number): number {
+  integer<T extends number>(value: T | undefined, fieldName = "value", defaultValue?: T): T {
     value = validate.number(value, fieldName, defaultValue);
 
     if (!Number.isInteger(value)) {
@@ -81,10 +81,10 @@ export const validate = {
   /**
    * Validates a positive integer value.
    */
-  positiveInteger(value: number | undefined, fieldName = "value", defaultValue?: number): number {
+  positiveInteger<T extends number>(value: T | undefined, fieldName = "value", defaultValue?: T): T {
     value = validate.integer(value, fieldName, defaultValue);
 
-    if (value < 1) {
+    if (value as number < 1) {
       throw ono.range(`Invalid ${fieldName}: ${valueToString(value)}. Expected a positive integer.`);
     }
 
@@ -94,7 +94,7 @@ export const validate = {
   /**
    * Validates any object value (including empty objects, but **not** including `null`).
    */
-  object(value: object | undefined, fieldName = "value", defaultValue?: object): object {
+  object<T extends object>(value: T | undefined, fieldName = "value", defaultValue?: T): T {
     value = validate.hasValue(value, fieldName, defaultValue);
 
     if (typeof value !== "object" || value === null) {
@@ -108,7 +108,7 @@ export const validate = {
    * Validates any function value (including classes, async functions, arrow functions, generator functions).
    */
   // tslint:disable-next-line: ban-types
-  function(value: Function | undefined, fieldName = "value", defaultValue?: Function): Function {
+  function<T extends Function>(value: T | undefined, fieldName = "value", defaultValue?: T): T {
     value = validate.hasValue(value, fieldName, defaultValue);
 
     if (typeof value !== "function") {
