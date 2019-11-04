@@ -15,7 +15,8 @@ export function createChangedFile(info: ChangedFile | ChangedFileInfo, pluginNam
   let file = createFile(info) as ChangedFile;
 
   if (!info.change) {
-    throw ono.type(`The type of file change must be specified (${valuesToString(fileChangeTypes)}).`);
+    let list = valuesToString(fileChangeTypes, { conjunction: "or" });
+    throw ono.type(`The type of file change must be specified (${list}).`);
   }
 
   file.change = validate.oneOf(info.change, fileChangeTypes, "file change");

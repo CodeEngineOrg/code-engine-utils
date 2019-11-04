@@ -265,7 +265,7 @@ describe("createChangedFile() function", () => {
     }
 
     expect(invalidPath).to.throw(TypeError);
-    expect(invalidPath).to.throw('The type of file change must be specified ("created", "modified", and "deleted").');
+    expect(invalidPath).to.throw('The type of file change must be specified ("created", "modified", or "deleted").');
   });
 
   it("should throw an error if called with an invalid change type", () => {
