@@ -1,4 +1,4 @@
-import * as typeName from "type-name";
+import { typeName } from "./type-name";
 
 const vowels = ["a", "e", "i", "o", "u"];
 

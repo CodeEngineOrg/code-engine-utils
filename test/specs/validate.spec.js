@@ -1,5 +1,5 @@
-/* eslint-disable no-new-object */
-/* eslint-disable no-new-wrappers */
+/* globals BigInt */
+/* eslint-disable no-new-object, no-new-wrappers */
 "use strict";
 
 const { validate } = require("../../");
@@ -314,48 +314,6 @@ describe("Validation functions", () => {
     });
   });
 
-  describe("validate.oneOf()", () => {
-    it("should validate values that are in the list of allowed values", () => {
-      expect(validate.oneOf(1.0, [1, 2, 3, 4, 5])).to.equal(1);
-      expect(validate.oneOf(false, [true, false])).to.equal(false);
-      expect(validate.oneOf("Wilma", ["Fred", "Barney", "Wilma", "Betty"])).to.equal("Wilma");
-    });
-
-    it("should throw an error for values that are not in the list of allowed values", () => {
-      function notAllowed (value, allowed) {
-        return () => {
-          validate.oneOf(value, allowed);
-        };
-      }
-
-      expect(notAllowed(-1, [1, 2, 3, 4]))
-        .to.throw(TypeError, "Invalid value: -1. Expected 1, 2, 3, or 4.");
-
-      expect(notAllowed(0, [true, false]))
-        .to.throw(TypeError, "Invalid value: 0. Expected true or false.");
-
-      expect(notAllowed("Arnold", ["Fred", "Barney", "Wilma", "Betty"]))
-        .to.throw(TypeError, 'Invalid value: "Arnold". Expected "Fred", "Barney", "Wilma", or "Betty"');
-    });
-
-    it("should throw an error for invalid defaults", () => {
-      function badDefault (allowed, defaultValue) {
-        return () => {
-          validate.oneOf(undefined, allowed, "thing", defaultValue);
-        };
-      }
-
-      expect(badDefault([1, 2, 3], Number.MAX_SAFE_INTEGER))
-        .to.throw(TypeError, "Invalid thing: 9007199254740991. Expected 1, 2, or 3.");
-
-      expect(badDefault([true, false], "true"))
-        .to.throw(TypeError, 'Invalid thing: "true". Expected true or false.');
-
-      expect(badDefault(["Fred", "Barney", "Wilma", "Betty"], /Wilma/))
-        .to.throw(TypeError, 'Invalid thing: /Wilma/. Expected "Fred", "Barney", "Wilma", or "Betty"');
-    });
-  });
-
   describe("validate.object()", () => {
     it("should validate empty objects", () => {
       expect(validate.object({})).to.deep.equal({});
@@ -491,6 +449,172 @@ describe("Validation functions", () => {
       expect(invalidDefault("Hello, world!")).to.throw(TypeError, "Invalid thing: \"Hello, world!\". Expected a function.");
       expect(invalidDefault(/regex/)).to.throw(TypeError, "Invalid thing: /regex/. Expected a function.");
       expect(invalidDefault(new Date())).to.throw(TypeError, "Invalid thing: Date. Expected a function.");
+    });
+  });
+
+  describe("validate.type()", () => {
+    it("should validate special values that are in the list of allowed types", () => {
+      expect(validate.type(null, [String, Boolean, null, Number])).to.equal(null);
+      expect(validate.type(undefined, [String, Boolean, undefined, Number])).to.equal(undefined);
+      expect(validate.type(NaN, [String, Boolean, NaN, Number])).to.satisfy(Number.isNaN);
+    });
+
+    it("should validate primitive values that are in the list of allowed types", () => {
+      expect(validate.type("Hello, world!", [String, Boolean, null, Number])).to.equal("Hello, world!");
+      expect(validate.type(12345, [String, Boolean, undefined, Number])).to.equal(12345);
+      expect(validate.type(false, [String, Boolean, NaN, Number])).to.equal(false);
+    });
+
+    it("should validate wrapped primitive values that are in the list of allowed types", () => {
+      expect(validate.type(new String("Hello, world!"), [String, Boolean, null, Number])).to.deep.equal(new String("Hello, world!"));
+      expect(validate.type(new Number(12345), [String, Boolean, undefined, Number])).to.deep.equal(new Number(12345));
+      expect(validate.type(new Boolean(false), [String, Boolean, NaN, Number])).to.deep.equal(new Boolean(false));
+      expect(validate.type(BigInt(123456789), [String, Boolean, NaN, BigInt])).to.deep.equal(BigInt(123456789));
+      expect(validate.type(Symbol("foo"), [String, Boolean, Symbol, Number])).to.be.a("symbol");
+    });
+
+    it("should validate values that are instances of allowed types", () => {
+      expect(validate.type(/regex/, [String, Boolean, RegExp, Number])).to.be.an.instanceOf(RegExp);
+      expect(validate.type(() => undefined, [String, Function, RegExp, Number])).to.be.a("function");
+      expect(validate.type(new Date(), [String, Function, RegExp, Date])).to.be.an.instanceOf(Date);
+      expect(validate.type(new Map(), [String, Function, Map, Date])).to.be.an.instanceOf(Map);
+      expect(validate.type(new Set(), [String, Function, Set, Date])).to.be.an.instanceOf(Set);
+      expect(validate.type(Buffer.alloc(0), [String, Buffer, RegExp, Date])).to.be.an.instanceOf(Buffer);
+    });
+
+    it("should validate default values", () => {
+      expect(validate.type(undefined, [Number, BigInt], "count", 12345)).to.equal(12345);
+      expect(validate.type(undefined, [Array, Map, Set], "list", [])).to.deep.equal([]);
+      expect(validate.type(undefined, [String, RegExp], "pattern", /regex/)).to.deep.equal(/regex/);
+    });
+
+    it("should throw an error for special values that are not in the list of allowed types", () => {
+      function notAllowed (value, allowed) {
+        return () => {
+          validate.type(value, allowed, "thing");
+        };
+      }
+
+      expect(notAllowed(null, [String, undefined, Date, NaN]))
+        .to.throw(TypeError, "Invalid thing: null. Expected string, Date, undefined, or NaN.");
+
+      expect(notAllowed(undefined, [String, null, RegExp, NaN]))
+        .to.throw(TypeError, "Invalid thing: undefined. Expected string, RegExp, null, or NaN.");
+
+      expect(notAllowed(NaN, [Map, undefined, Buffer, null]))
+        .to.throw(TypeError, "Invalid thing: NaN. Expected Map, Buffer, undefined, or null.");
+    });
+
+    it("should throw an error for primitive values that are not in the list of allowed types", () => {
+      function notAllowed (value, allowed) {
+        return () => {
+          validate.type(value, allowed, "thing");
+        };
+      }
+
+      expect(notAllowed("Hello, world!", [Number, RegExp, undefined, Date, NaN, Boolean]))
+        .to.throw(TypeError, 'Invalid thing: "Hello, world!". Expected number, boolean, RegExp, Date, undefined, or NaN.');
+
+      expect(notAllowed(12345, [String, RegExp, undefined, Date, NaN, Boolean]))
+        .to.throw(TypeError, "Invalid thing: 12345. Expected string, boolean, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(false, [String, RegExp, undefined, Date, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: false. Expected string, number, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(true, [String, RegExp, undefined, Date, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: true. Expected string, number, RegExp, Date, undefined, or NaN.");
+    });
+
+    it("should throw an error for wrapped primitive values that are not in the list of allowed types", () => {
+      function notAllowed (value, allowed) {
+        return () => {
+          validate.type(value, allowed, "thing");
+        };
+      }
+
+      expect(notAllowed(new String("Hello, world!"), [Number, RegExp, undefined, Date, NaN, Boolean]))
+        .to.throw(TypeError, "Invalid thing: Hello, world!. Expected number, boolean, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(new Number(12345), [String, RegExp, undefined, Date, NaN, Boolean]))
+        .to.throw(TypeError, "Invalid thing: 12345. Expected string, boolean, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(new Boolean(false), [String, RegExp, undefined, Date, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: false. Expected string, number, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(BigInt(123456789), [String, RegExp, undefined, Date, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: 123456789. Expected string, number, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(Symbol("foo"), [String, RegExp, undefined, Date, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: Symbol(foo). Expected string, number, RegExp, Date, undefined, or NaN.");
+    });
+
+    it("should throw an error for values that are not in the list of allowed types", () => {
+      function notAllowed (value, allowed) {
+        return () => {
+          validate.type(value, allowed, "thing");
+        };
+      }
+
+      expect(notAllowed(/regex/, [Number, Map, undefined, Date, NaN, Boolean]))
+        .to.throw(TypeError, "Invalid thing: /regex/. Expected number, boolean, Map, Date, undefined, or NaN.");
+
+      expect(notAllowed(() => undefined, [String, RegExp, undefined, Date, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: () => undefined. Expected string, number, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(new Date(), [String, RegExp, undefined, Symbol, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: Date. Expected string, symbol, number, RegExp, undefined, or NaN.");
+
+      expect(notAllowed(new Map(), [String, RegExp, undefined, Date, NaN, Number]))
+        .to.throw(TypeError, "Invalid thing: Map. Expected string, number, RegExp, Date, undefined, or NaN.");
+
+      expect(notAllowed(new Set([1, 2, 3]), [String, RegExp, Array, Date, Map, Number]))
+        .to.throw(TypeError, "Invalid thing: Set. Expected string, number, RegExp, Array, Date, or Map.");
+
+      expect(notAllowed(Buffer.alloc(0), [String, Map, Function, Array, Set, Number]))
+        .to.throw(TypeError, "Invalid thing: Uint8Array. Expected string, number, Map, Function, Array, or Set.");
+    });
+
+  });
+
+  describe("validate.oneOf()", () => {
+    it("should validate values that are in the list of allowed values", () => {
+      expect(validate.oneOf(1.0, [1, 2, 3, 4, 5])).to.equal(1);
+      expect(validate.oneOf(false, [true, false])).to.equal(false);
+      expect(validate.oneOf("Wilma", ["Fred", "Barney", "Wilma", "Betty"])).to.equal("Wilma");
+    });
+
+    it("should throw an error for values that are not in the list of allowed values", () => {
+      function notAllowed (value, allowed) {
+        return () => {
+          validate.oneOf(value, allowed);
+        };
+      }
+
+      expect(notAllowed(-1, [1, 2, 3, 4]))
+        .to.throw(TypeError, "Invalid value: -1. Expected 1, 2, 3, or 4.");
+
+      expect(notAllowed(0, [true, false]))
+        .to.throw(TypeError, "Invalid value: 0. Expected true or false.");
+
+      expect(notAllowed("Arnold", ["Fred", "Barney", "Wilma", "Betty"]))
+        .to.throw(TypeError, 'Invalid value: "Arnold". Expected "Fred", "Barney", "Wilma", or "Betty"');
+    });
+
+    it("should throw an error for invalid defaults", () => {
+      function badDefault (allowed, defaultValue) {
+        return () => {
+          validate.oneOf(undefined, allowed, "thing", defaultValue);
+        };
+      }
+
+      expect(badDefault([1, 2, 3], Number.MAX_SAFE_INTEGER))
+        .to.throw(TypeError, "Invalid thing: 9007199254740991. Expected 1, 2, or 3.");
+
+      expect(badDefault([true, false], "true"))
+        .to.throw(TypeError, 'Invalid thing: "true". Expected true or false.');
+
+      expect(badDefault(["Fred", "Barney", "Wilma", "Betty"], /Wilma/))
+        .to.throw(TypeError, 'Invalid thing: /Wilma/. Expected "Fred", "Barney", "Wilma", or "Betty"');
     });
   });
 
