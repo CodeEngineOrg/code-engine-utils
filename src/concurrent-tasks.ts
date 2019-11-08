@@ -1,5 +1,5 @@
+import { validate } from "@code-engine/validate";
 import { ono } from "ono";
-import { validate } from "./validate";
 
 /**
  * Concurrently runs async tasks, up to a specified limit at a time.
@@ -15,7 +15,7 @@ export class ConcurrentTasks {
   private _tasks = new Map<number, Promise<number>>();
 
   public constructor(concurrency: number) {
-    this._concurrency = validate.positiveInteger(concurrency, "concurrency");
+    this._concurrency = validate.number.integer.positive(concurrency, "concurrency");
   }
 
   /**

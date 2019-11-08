@@ -4,7 +4,7 @@ const { expect } = require("chai");
 const commonJSExport = require("../../");
 const { default: defaultExport } = require("../../");
 const {
-  createFile, createChangedFile, normalizeFileInfo, log, validate, valueToString, valuesToString, ConcurrentTasks,
+  createFile, createChangedFile, normalizeFileInfo, log, ConcurrentTasks,
   iterate, iterateAll, debounceIterable, drainIterable, joinIterables, splitIterable, IterableWriter
 } = require("../../");
 
@@ -32,23 +32,6 @@ describe("@code-engine/utils package exports", () => {
   it("should export the log function as a named export", () => {
     expect(log).to.be.a("function");
     expect(log.name).to.equal("log");
-  });
-
-  it("should export the validate object as a named export", () => {
-    expect(validate).to.be.an("object");
-    for (let key of Object.keys(validate)) {
-      expect(validate[key]).to.be.a("function").with.property("name", key);
-    }
-  });
-
-  it("should export the valueToString function as a named export", () => {
-    expect(valueToString).to.be.a("function");
-    expect(valueToString.name).to.equal("valueToString");
-  });
-
-  it("should export the valuesToString function as a named export", () => {
-    expect(valuesToString).to.be.a("function");
-    expect(valuesToString.name).to.equal("valuesToString");
   });
 
   it("should export the ConcurrentTasks class as a named export", () => {
@@ -97,9 +80,6 @@ describe("@code-engine/utils package exports", () => {
       "createChangedFile",
       "normalizeFileInfo",
       "log",
-      "validate",
-      "valueToString",
-      "valuesToString",
       "ConcurrentTasks",
       "iterate",
       "iterateAll",

@@ -1,6 +1,6 @@
+import { stringify } from "@code-engine/stringify";
 import { ZeroOrMore } from "@code-engine/types";
 import { ono } from "ono";
-import { valueToString } from "./value-to-string";
 
 /**
  * Returns the given value's iterator, if possible.
@@ -30,7 +30,7 @@ export function demandIterator<T>(iterable: ZeroOrMore<T>): Iterator<T> | AsyncI
   let iterator = getIterator(iterable);
 
   if (!iterator || typeof iterator.next !== "function") {
-    let value = valueToString(iterable, { capitalize: true, article: true });
+    let value = stringify(iterable, { capitalize: true, article: true });
     throw ono.type(`${value} is not iterable.`);
   }
 

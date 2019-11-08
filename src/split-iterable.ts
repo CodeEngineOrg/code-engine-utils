@@ -1,8 +1,8 @@
+import { stringify } from "@code-engine/stringify";
 import { AsyncAllIterable } from "@code-engine/types";
+import { validate } from "@code-engine/validate";
 import { ono } from "ono";
 import { iterateAll } from "./iterate-all";
-import { validate } from "./validate";
-import { valueToString } from "./value-to-string";
 
 /**
  * Splits an iterable into separate ones that each iterate a subset of the values. Each value in the
@@ -11,11 +11,11 @@ import { valueToString } from "./value-to-string";
  */
 export function splitIterable<T>(source: AsyncIterable<T>, concurrency: number): Array<AsyncAllIterable<T>> {
   if (!source || typeof source[Symbol.asyncIterator] !== "function") {
-    let value = valueToString(source, { capitalize: true, article: true });
+    let value = stringify(source, { capitalize: true, article: true });
     throw ono.type(`${value} is not an async iterator.`);
   }
 
-  validate.positiveInteger(concurrency, "concurrency");
+  validate.number.integer.positive(concurrency, "concurrency");
 
   let iterator = source[Symbol.asyncIterator]();
   return [...Array(concurrency)].map(() => createIterable<T>(iterator));

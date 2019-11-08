@@ -1,7 +1,7 @@
+import { stringify } from "@code-engine/stringify";
 import { AnyContents, File, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
 import { ono } from "ono";
 import * as path from "path";
-import { valueToString } from "./value-to-string";
 
 const _private = Symbol("private");
 
@@ -25,7 +25,7 @@ export function createFile(info: File | FileInfo, pluginName?: string): File {
  */
 export function normalizeFileInfo(info: File | FileInfo): NormalizedFileInfo {
   if (!info || typeof info !== "object" || typeof info.path !== "string") {
-    throw ono.type(`Invalid CodeEngine file: ${valueToString(info)}. Expected an object with at least a "path" property.`);
+    throw ono.type(`Invalid CodeEngine file: ${stringify(info)}. Expected an object with at least a "path" property.`);
   }
 
   let normalized: NormalizedFileInfo = {
@@ -221,7 +221,7 @@ function toBuffer(value?: AnyContents): Buffer {
     }
   }
   catch (error) {
-    throw ono.type(error, `Invalid file contents: ${valueToString(value)}`);
+    throw ono.type(error, `Invalid file contents: ${stringify(value)}`);
   }
 }
 

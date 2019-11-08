@@ -1,8 +1,8 @@
+import { stringify } from "@code-engine/stringify";
 import { ChangedFile, ChangedFileInfo, FileChange } from "@code-engine/types";
+import { validate } from "@code-engine/validate";
 import { ono } from "ono";
 import { createFile } from "./create-file";
-import { validate } from "./validate";
-import { valuesToString } from "./values-to-string";
 
 
 const fileChangeTypes = [FileChange.Created, FileChange.Modified, FileChange.Deleted];
@@ -15,11 +15,11 @@ export function createChangedFile(info: ChangedFile | ChangedFileInfo, pluginNam
   let file = createFile(info) as ChangedFile;
 
   if (!info.change) {
-    let list = valuesToString(fileChangeTypes, { conjunction: "or" });
+    let list = stringify.values(fileChangeTypes, { conjunction: "or" });
     throw ono.type(`The type of file change must be specified (${list}).`);
   }
 
-  file.change = validate.oneOf(info.change, fileChangeTypes, "file change");
+  file.change = validate.value.oneOf(info.change, fileChangeTypes, "file change");
 
   return file;
 }
