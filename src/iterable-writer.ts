@@ -46,7 +46,7 @@ export class IterableWriter<T> {
     this._assertWritable();
 
     // This promise resolves when the value is read
-    await new Promise(async (resolve) => {
+    await new Promise((resolve) => {
       // Store a function that resolves the write() promise when the value is read
       this._values.push(() => {
         resolve();
@@ -54,7 +54,7 @@ export class IterableWriter<T> {
       });
 
       // If there are any pending reads, then read them now that we have data
-      await this._resolvePendingReads();
+      this._resolvePendingReads();
     });
   }
 
@@ -102,7 +102,7 @@ export class IterableWriter<T> {
    */
   public async end(): Promise<void> {
     this._doneWriting = true;
-    await this._resolvePendingReads();
+    this._resolvePendingReads();
     return this._pendingEnd.promise;
   }
 
@@ -110,7 +110,7 @@ export class IterableWriter<T> {
    * Reads the next value, or waits for one to be written.
    * @internal
    */
-  private  async _read(): Promise<IteratorResult<T>> {
+  private async _read(): Promise<IteratorResult<T>> {
     let getValue = this._values.shift();
 
     if (getValue) {
@@ -118,12 +118,13 @@ export class IterableWriter<T> {
       return { value };
     }
     else if (this._allDone()) {
-      await this._pendingEnd.resolve();
+      this._pendingEnd.resolve();
       return { done: true, value: undefined };
     }
     else {
       let pendingRead = pending<IteratorResult<T>>();
       this._pendingReads.push(pendingRead);
+      this._resolvePendingReads();
       return pendingRead.promise;
     }
   }
@@ -132,7 +133,7 @@ export class IterableWriter<T> {
    * Resolves any pending `iterable.next()` calls using queued values.
    * @internal
    */
-  private async _resolvePendingReads() {
+  private _resolvePendingReads() {
     while (this._pendingReads.length > 0) {
       if (this._values.length > 0) {
         // NOTE: It's important that BOTH of these values are gotten synchronously
@@ -142,16 +143,16 @@ export class IterableWriter<T> {
 
         try {
           let value = getValue();
-          await pendingRead.resolve({ value });
+          pendingRead.resolve({ value });
         }
         catch (error) {
-          await pendingRead.reject(error as Error);
+          pendingRead.reject(error as Error);
         }
       }
       else if (this._allDone()) {
         let pendingRead = this._pendingReads.shift()!;
-        await pendingRead.resolve({ done: true, value: undefined });
-        await this._pendingEnd.resolve();
+        pendingRead.resolve({ done: true, value: undefined });
+        this._pendingEnd.resolve();
       }
       else {
         break;

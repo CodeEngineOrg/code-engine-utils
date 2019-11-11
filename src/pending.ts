@@ -12,13 +12,12 @@ export function pending<T>(): Pending<T> {
 
   return {
     promise,
-    async resolve(result) {
-      await Promise.resolve();
-      resolve(result);
+    resolve(result) {
+      // tslint:disable-next-line: no-floating-promises
+      Promise.resolve(result).then(resolve);
     },
-    async reject(reason: Error) {
-      await Promise.resolve();
-      reject(reason);
+    reject(reason: Error) {
+      Promise.reject(reason).catch(reject);
     }
   };
 }
@@ -33,12 +32,12 @@ export interface Pending<T> {
   /**
    * Resolves the promise with the given value.
    */
-  resolve(result: T | PromiseLike<T>): Promise<void>;
+  resolve(result: T | PromiseLike<T>): void;
 
   /**
    * Rejects the promise with the given reason.
    */
-  reject(reason: Error): Promise<void>;
+  reject(reason: Error): void;
 }
 
 type Resolve<T> = (result: T | PromiseLike<T>) => void;

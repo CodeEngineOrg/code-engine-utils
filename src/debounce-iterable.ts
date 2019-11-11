@@ -36,10 +36,10 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
       }
 
       if (values.length > 0) {
-        await debounce();
+        debounce();
       }
       else if (done) {
-        await pendingRead.resolve({ done: true, value: undefined });
+        pendingRead.resolve({ done: true, value: undefined });
       }
 
       return promise;
@@ -52,7 +52,7 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
   }
 
   // Process a result from the async iterator
-  async function onResult(result: IteratorResult<T>) {
+  function onResult(result: IteratorResult<T>) {
     if (timeout) {
       // A new result arrived within the threshold time, so clear the timeout
       clearTimeout(timeout);
@@ -62,10 +62,10 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
       done = true;
 
       if (pendingRead && values.length === 0) {
-        await pendingRead.resolve({ done: true, value: undefined });
+        pendingRead.resolve({ done: true, value: undefined });
       }
       else {
-        await debounce();
+        debounce();
       }
     }
     else {
@@ -87,17 +87,17 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
       values = [];
       let resolve = pendingRead.resolve;
       pendingRead = pending();
-      await resolve({ value: batch });
+      resolve({ value: batch });
     }
   }
 
   // If the async iterator throws an error, then our iterable re-throws it
-  async function onError(error: Error) {
+  function onError(error: Error) {
     if (!pendingRead) {
       pendingRead = pending();
     }
 
-    await pendingRead.reject(error);
+    pendingRead.reject(error);
 
     // Ensure that there's at least one rejection handler;
     // otherwise, Node will crash the process
