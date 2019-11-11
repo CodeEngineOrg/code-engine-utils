@@ -15,9 +15,9 @@ describe("ConcurrentTasks class", () => {
     let endTime = Date.now();
 
     // CI environments are slow, so use a larger buffer
-    const buffer = process.env.CI ? 75 : 10;
+    const TIME_BUFFER = process.env.CI ? 75 : 25;
 
-    expect(endTime - startTime).to.be.at.least(time - buffer).and.at.most(time + buffer);
+    expect(endTime - startTime).to.be.at.least(time - TIME_BUFFER).and.at.most(time + TIME_BUFFER);
   }
 
   it("can be called with new", () => {
