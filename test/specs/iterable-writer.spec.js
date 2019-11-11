@@ -272,6 +272,26 @@ describe("IterableWriter class", () => {
     }
   });
 
+  it("should throw an error if the iterable passed to writeFrom() returns an invalid result", async () => {
+    let badIterator = {
+      next () {
+        return null;
+      }
+    };
+
+    let writer = new IterableWriter();
+    writer.writeFrom(badIterator);
+
+    try {
+      await writer.iterable.all();
+      assert.fail("An error should have been thrown.");
+    }
+    catch (error) {
+      expect(error).to.be.an.instanceOf(TypeError);
+      expect(error.message).to.equal("Cannot read property 'done' of null");
+    }
+  });
+
   it("should throw an error if a Promise is passed to writeFrom()", async () => {
     let writer = new IterableWriter();
 

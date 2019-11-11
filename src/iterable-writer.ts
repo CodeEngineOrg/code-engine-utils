@@ -68,7 +68,7 @@ export class IterableWriter<T> {
 
     // Reads the next result from the async iterator and processes it
     let readNextResult = () => {
-      Promise.resolve().then(() => iterator.next()).then(onResult, onError);
+      Promise.resolve().then(() => iterator.next()).then(onResult).catch(onError);
     };
 
     // Process a result from the async iterator
