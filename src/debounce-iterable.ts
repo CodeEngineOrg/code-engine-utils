@@ -46,12 +46,16 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
     }
   };
 
-  // Reads the next result from the iterator and processes it
+  /**
+   * Reads the next result from the iterator and processes it
+   */
   function readNextResult() {
     Promise.resolve().then(() => iterator.next()).then(onResult, onError);
   }
 
-  // Process a result from the async iterator
+  /**
+   * Process a result from the async iterator
+   */
   function onResult(result: IteratorResult<T>) {
     if (timeout) {
       // A new result arrived within the threshold time, so clear the timeout
@@ -75,8 +79,10 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
     }
   }
 
-  // This function is called whenever the debounce threshold has passed
-  async function debounce() {
+  /**
+   * This function is called whenever the debounce threshold has passed
+   */
+  function debounce() {
     timeout = undefined;
 
     // If there's a pending read, then fulfill it with all of the debounced values that have
@@ -91,7 +97,9 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
     }
   }
 
-  // If the async iterator throws an error, then our iterable re-throws it
+  /**
+   * If the async iterator throws an error, then our iterable re-throws it
+   */
   function onError(error: Error) {
     if (!pendingRead) {
       pendingRead = pending();
