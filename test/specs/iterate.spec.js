@@ -2,6 +2,7 @@
 
 const { iterate } = require("../../");
 const { assert, expect } = require("chai");
+const delayed = require("../utils/delayed");
 
 describe("iterate() function", () => {
 
@@ -269,6 +270,68 @@ describe("iterate() function", () => {
       { firstName: "Betty", lastName: "Rubble" },
       { firstName: "Bam Bam", lastName: "Rubble" },
     ]);
+  });
+
+  it("should read values from an async iterator concurrently", async () => {
+    const TIME_BUFFER = process.env.CI ? 50 : 25;         // CI environments are slow, so use a larger time buffer
+    let startTime = Date.now();
+    let callTimes = [];                                   // Keeps to rack of each time next() is called
+
+    let slowIterator = {
+      async next () {
+        callTimes.push(Date.now() - startTime);           // Record the time that next() was called
+        await delayed({ value: null }, 100);              // Each call to next() takes 100ms to resolve
+      }
+    };
+
+    let iterator = iterate(slowIterator)[Symbol.asyncIterator]();
+
+    // Read multiple values simultaneously
+    let promise1 = iterator.next();
+    let promise2 = iterator.next();
+    let promise3 = iterator.next();
+
+    await Promise.all([promise1, promise2, promise3]);
+
+    // The time needed to resolve all three reads should be 100ms, NOT 300ms
+    expect(Date.now() - startTime).to.be.at.least(100).and.below(100 + TIME_BUFFER);
+
+    // All three values should have been read at roughly the same time
+    expect(callTimes[0]).to.be.at.most(TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(TIME_BUFFER);
+  });
+
+  it("should read values from an async generator sequentially", async () => {
+    const TIME_BUFFER = process.env.CI ? 50 : 25;         // CI environments are slow, so use a larger time buffer
+    let startTime = Date.now();
+    let callTimes = [];                                   // Keeps to rack of each time next() is called
+
+    async function* slowGenerator () {
+      while (true) {
+        callTimes.push(Date.now() - startTime);           // Record the time that next() was called
+        yield await delayed(null, 100);                   // Each call to next() takes 100ms to resolve
+      }
+    }
+
+    let iterator = iterate(slowGenerator())[Symbol.asyncIterator]();
+
+    // Read multiple values simultaneously
+    let promise1 = iterator.next();
+    let promise2 = iterator.next();
+    let promise3 = iterator.next();
+
+    await Promise.all([promise1, promise2, promise3]);
+
+    // The time needed to resolve all three reads should be 300ms, not 100ms.
+    expect(Date.now() - startTime).to.be.at.least(300).and.below(300 + TIME_BUFFER);
+
+    // Each value should habe been read roughly 100ms after the previous one.
+    // This is because generators don't allow simultaneous reads. Each call to next() is queued up
+    // and only starts after the previous call completes.
+    expect(callTimes[0]).to.be.at.most(0 + TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(100 + TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(200 + TIME_BUFFER);
   });
 
   it("should throw an error for an invalid iterator", async () => {
