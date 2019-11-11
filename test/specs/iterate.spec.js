@@ -280,7 +280,7 @@ describe("iterate() function", () => {
     let slowIterator = {
       async next () {
         callTimes.push(Date.now() - startTime);           // Record the time that next() was called
-        await delayed({ value: null }, 100);              // Each call to next() takes 100ms to resolve
+        return await delayed({ value: null }, 100);       // Each call to next() takes 100ms to resolve
       }
     };
 
