@@ -1,5 +1,6 @@
 /**
- * Returns a `Promise` and the `resolve()` function that resolves the promise.
+ * Returns a `Promise` and the functions to resolve or reject it.
+ * @internal
  */
 export function pending<T>(): Pending<T> {
   let resolve: Resolve<T>, reject: Reject;
@@ -24,6 +25,7 @@ export function pending<T>(): Pending<T> {
 
 /**
  * A pending `Promise`, and the functions to resolve or reject it.
+ * @internal
  */
 export interface Pending<T> {
   promise: Promise<T>;
