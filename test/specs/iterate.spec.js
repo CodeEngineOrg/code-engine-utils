@@ -142,15 +142,22 @@ describe("iterate() function", () => {
   it("should iterate an array of Promises", async () => {
     let items = await iterate([Promise.resolve("hello"), Promise.resolve("world")]).all();
     expect(items).to.be.an("array").with.lengthOf(2);
-    expect(items).to.deep.equal(["hello", "world"]);
+    expect(items[0]).to.be.a("Promise");
+    expect(items[1]).to.be.a("Promise");
+    expect(await Promise.all(items)).to.deep.equal(["hello", "world"]);
 
     items = await iterate(Promise.resolve([Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)])).all();
     expect(items).to.be.an("array").with.lengthOf(3);
-    expect(items).to.deep.equal([1, 2, 3]);
+    expect(items[0]).to.be.a("Promise");
+    expect(items[1]).to.be.a("Promise");
+    expect(items[2]).to.be.a("Promise");
+    expect(await Promise.all(items)).to.deep.equal([1, 2, 3]);
 
     items = await iterate([Promise.resolve({ name: "Fred" }), Promise.resolve({ name: "Barney" })]).all();
     expect(items).to.be.an("array").with.lengthOf(2);
-    expect(items).to.deep.equal([{ name: "Fred" }, { name: "Barney" }]);
+    expect(items[0]).to.be.a("Promise");
+    expect(items[1]).to.be.a("Promise");
+    expect(await Promise.all(items)).to.deep.equal([{ name: "Fred" }, { name: "Barney" }]);
   });
 
   it("should iterate a generator", async () => {
@@ -173,7 +180,10 @@ describe("iterate() function", () => {
 
     let items = await iterate(counter()).all();
     expect(items).to.be.an("array").with.lengthOf(3);
-    expect(items).to.deep.equal([1, 2, 3]);
+    expect(items[0]).to.be.a("Promise");
+    expect(items[1]).to.be.a("Promise");
+    expect(items[2]).to.be.a("Promise");
+    expect(await Promise.all(items)).to.deep.equal([1, 2, 3]);
   });
 
   it("should iterate an async generator", async () => {
@@ -245,7 +255,13 @@ describe("iterate() function", () => {
 
     let items = await iterate(iterator).all();
     expect(items).to.be.an("array").with.lengthOf(6);
-    expect(items).to.deep.equal([
+    expect(items[0]).to.be.a("Promise");
+    expect(items[1]).to.be.a("Promise");
+    expect(items[2]).to.be.a("Promise");
+    expect(items[3]).to.be.a("Promise");
+    expect(items[4]).to.be.a("Promise");
+    expect(items[5]).to.be.a("Promise");
+    expect(await Promise.all(items)).to.deep.equal([
       { firstName: "Fred", lastName: "Flintstone" },
       { firstName: "Wilma", lastName: "Flintstone" },
       { firstName: "Pebbles", lastName: "Flintstone" },
@@ -268,7 +284,7 @@ describe("iterate() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
-      expect(error.message).to.equal("Cannot read property 'done' of null");
+      expect(error.message).to.equal("Iterator result null is not an object");
     }
   });
 

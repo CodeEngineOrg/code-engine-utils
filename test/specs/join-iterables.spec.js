@@ -72,7 +72,13 @@ describe("joinIterables() function", () => {
   });
 
   it("should return all items, in order, from a single source", async () => {
-    let source = iterate([1, 2, delayed(3), 4]);
+    let source = createIterator([
+      { value: 1 },
+      { value: 2 },
+      delayed({ value: 3 }),
+      { value: 4 },
+    ]);
+
     let items = await joinIterables(source).all();
 
     expect(items).to.be.an("array").with.lengthOf(4);
@@ -80,10 +86,28 @@ describe("joinIterables() function", () => {
   });
 
   it("should return all items, in first-available order, from multiple sources", async () => {
-    let source1 = iterate([1, delayed(2), delayed(3), 4]);
-    let source2 = iterate(["a", delayed("b"), "c", delayed("d")]);
-    let source3 = iterate([delayed(101, 0), delayed(102), delayed(103)]);
-    let source4 = iterate(["foo", "bar", "baz"]);
+    let source1 = createIterator([
+      { value: 1 },
+      delayed({ value: 2 }),
+      delayed({ value: 3 }),
+      { value: 4 },
+    ]);
+    let source2 = createIterator([
+      { value: "a" },
+      delayed({ value: "b" }),
+      { value: "c" },
+      delayed({ value: "d" }),
+    ]);
+    let source3 = createIterator([
+      delayed({ value: 101 }, 0),
+      delayed({ value: 102 }, 50),
+      delayed({ value: 103 }, 50),
+    ]);
+    let source4 = createIterator([
+      { value: "foo" },
+      { value: "bar" },
+      { value: "baz" },
+    ]);
 
     let items = await joinIterables(source1, source2, source3, source4).all();
 
@@ -197,5 +221,13 @@ describe("joinIterables() function", () => {
       expect(error.message).to.equal("Boom!");
     }
   });
+
+  function createIterator (results) {
+    return {
+      next () {
+        return results.shift() || { done: true };
+      }
+    };
+  }
 
 });

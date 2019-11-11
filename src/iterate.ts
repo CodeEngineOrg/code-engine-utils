@@ -1,4 +1,4 @@
-import { AsyncAllGenerator, AsyncAllIterable, ZeroOrMore } from "@code-engine/types";
+import { AsyncAllIterable, ZeroOrMore } from "@code-engine/types";
 import { getIterator } from "./get-iterator";
 import { iterateAll } from "./iterate-all";
 
@@ -15,44 +15,25 @@ export function iterate<T>(values: ZeroOrMore<T> | Promise<ZeroOrMore<T>>): Asyn
     // The value is already an AsyncAllIterable, so return it as-is.
     return asyncIterable;
   }
-  else {
-    let generator = generate(values) as AsyncAllGenerator<T>;
-    generator.all = iterateAll;
-    return generator as AsyncAllIterable<T>;
-  }
+
+  return {
+    all: iterateAll,
+    [Symbol.asyncIterator]() {
+      return asyncIterator(values);
+    }
+  };
 }
 
-
 /**
- * A generator that iterates over any value or list of values.
+ * Asynchronously iterates over any value or list of values.
  */
-async function* generate<T>(value: ZeroOrMore<T> | Promise<ZeroOrMore<T>>): AsyncGenerator<T> {
+function asyncIterator<T>(values: ZeroOrMore<T> | Promise<ZeroOrMore<T>>): AsyncIterator<T> {
   // If the value is async, then wait for it to be fulfilled
-  value = await value;
+  let iterator = Promise.resolve(values).then(getIterator);
 
-  if (value === undefined) {
-    // There's no value, so exit without yielding anything
-    return value;
-  }
-
-  // Determine if the value is iterable
-  let iterator = getIterator(value);
-
-  if (iterator) {
-    // Iterate over the value
-    while (true) {
-      let result: IteratorResult<T> = await iterator.next();
-
-      if (result.done) {
-        return result.value;
-      }
-      else {
-        yield result.value;
-      }
+  return {
+    async next() {
+      return (await iterator).next();
     }
-  }
-  else {
-    // The value is not iterable, so just yield it as a single value
-    yield value as T;
-  }
+  };
 }

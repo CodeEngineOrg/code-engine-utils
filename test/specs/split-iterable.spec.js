@@ -47,6 +47,7 @@ describe("splitIterable() function", () => {
 
     let values = await Promise.all(iterables.map((it) => it.all()));
 
+    expect(values[0].length + values[1].length + values[2].length).to.equal(26);
     expect(values[0]).to.deep.equal(["a", "d", "g", "j", "m", "p", "s", "v", "y"]);
     expect(values[1]).to.deep.equal(["b", "e", "h", "k", "n", "q", "t", "w", "z"]);
     expect(values[2]).to.deep.equal(["c", "f", "i", "l", "o", "r", "u", "x"]);
