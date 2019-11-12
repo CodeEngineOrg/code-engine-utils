@@ -12,7 +12,7 @@ describe("ConcurrentTasks class", () => {
     let endTime = Date.now();
 
     // CI environments are slow, so use a larger buffer
-    const TIME_BUFFER = process.env.CI ? 75 : 25;
+    const TIME_BUFFER = process.env.CI ? 75 : 30;
 
     expect(endTime - startTime).to.be.at.least(time - TIME_BUFFER).and.at.most(time + TIME_BUFFER);
   }

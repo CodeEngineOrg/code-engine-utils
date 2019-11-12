@@ -261,7 +261,7 @@ describe("IterableWriter class", () => {
   });
 
   it("should read values from sources as soon as next() is called", async () => {
-    const TIME_BUFFER = process.env.CI ? 75 : 25;         // CI environments are slow, so use a larger time buffer
+    const TIME_BUFFER = process.env.CI ? 75 : 30;         // CI environments are slow, so use a larger time buffer
     let startTime = Date.now();
     let callTimes = [];                                   // Keeps to rack of each time next() is called
 

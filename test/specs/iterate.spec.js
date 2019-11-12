@@ -273,7 +273,7 @@ describe("iterate() function", () => {
   });
 
   it("should read values from an async iterator concurrently", async () => {
-    const TIME_BUFFER = process.env.CI ? 75 : 25;         // CI environments are slow, so use a larger time buffer
+    const TIME_BUFFER = process.env.CI ? 75 : 30;         // CI environments are slow, so use a larger time buffer
     let startTime = Date.now();
     let callTimes = [];                                   // Keeps to rack of each time next() is called
 
@@ -303,7 +303,7 @@ describe("iterate() function", () => {
   });
 
   it("should read values from an async generator sequentially", async () => {
-    const TIME_BUFFER = process.env.CI ? 75 : 25;         // CI environments are slow, so use a larger time buffer
+    const TIME_BUFFER = process.env.CI ? 75 : 30;         // CI environments are slow, so use a larger time buffer
     let startTime = Date.now();
     let callTimes = [];                                   // Keeps to rack of each time next() is called
 
