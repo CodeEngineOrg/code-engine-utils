@@ -154,17 +154,18 @@ describe("IterableWriter class", () => {
     let bambam = writer.iterable.next();
 
     writer.write("Fred");
-    writer.writeFrom(["Wilma", "Barney"]);
+    writer.writeFrom(["Wilma", "Barney", "Pebbles"]);
     writer.write("Betty");
 
     let wilma = writer.iterable.next();
-    let pebbles = writer.iterable.next();
+    let barney = writer.iterable.next();
 
-    writer.writeFrom(["Pebbles"]);
+    writer.writeFrom(["Dino"]);
     writer.write("Bam Bam");
     writer.end();
 
-    let barney = writer.iterable.next();
+    let pebbles = writer.iterable.next();
+    let dino = writer.iterable.next();
     let done1 = writer.iterable.next();
     let done2 = writer.iterable.next();
 
@@ -172,8 +173,9 @@ describe("IterableWriter class", () => {
     expect(await betty).to.deep.equal({ value: "Betty" });
     expect(await bambam).to.deep.equal({ value: "Bam Bam" });
     expect(await wilma).to.deep.equal({ value: "Wilma" });
-    expect(await pebbles).to.deep.equal({ value: "Pebbles" });
     expect(await barney).to.deep.equal({ value: "Barney" });
+    expect(await pebbles).to.deep.equal({ value: "Pebbles" });
+    expect(await dino).to.deep.equal({ value: "Dino" });
     expect(await done1).to.deep.equal({ done: true, value: undefined });
     expect(await done2).to.deep.equal({ done: true, value: undefined });
   });
@@ -217,6 +219,77 @@ describe("IterableWriter class", () => {
     let afterEnd = Date.now();
 
     expect(afterEnd).to.be.at.least(beforeEnd + 500);
+  });
+
+  it("should read values from sources in first-available order", async () => {
+    let source1 = createIterator([
+      { value: 1 },
+      delay(50, { value: 2 }),
+      delay(50, { value: 3 }),
+      { value: 4 },
+    ]);
+    let source2 = createIterator([
+      { value: "a" },
+      delay(50, { value: "b" }),
+      { value: "c" },
+      delay(50, { value: "d" }),
+    ]);
+    let source3 = createIterator([
+      delay(0, { value: 101 }),
+      delay(50, { value: 102 }),
+      delay(50, { value: 103 }),
+    ]);
+    let source4 = createIterator([
+      { value: "foo" },
+      { value: "bar" },
+      { value: "baz" },
+    ]);
+
+    let writer = new IterableWriter();
+    writer.writeFrom(source1);
+    writer.writeFrom(source2);
+    writer.writeFrom(source3);
+    writer.writeFrom(source4);
+    writer.end();
+
+    let items = await writer.iterable.all();
+
+    expect(items).to.be.an("array").with.lengthOf(14);
+    expect(items).to.deep.equal([
+      1, "a", "foo", "bar", "baz", 101, 2, 4, "c", 3, "b", "d", 102, 103
+    ]);
+  });
+
+  it("should read values from sources as soon as next() is called", async () => {
+    const TIME_BUFFER = process.env.CI ? 50 : 25;         // CI environments are slow, so use a larger time buffer
+    let startTime = Date.now();
+    let callTimes = [];                                   // Keeps to rack of each time next() is called
+
+    let slowIterator = {
+      async next () {
+        callTimes.push(Date.now() - startTime);           // Record the time that next() was called
+        return await delay(100, { value: null });         // Each call to next() takes 100ms to resolve
+      }
+    };
+
+    let writer = new IterableWriter();
+    let iterator = writer.iterable[Symbol.asyncIterator]();
+    writer.writeFrom(slowIterator);
+
+    // Read multiple values simultaneously
+    let promise1 = iterator.next();
+    let promise2 = iterator.next();
+    let promise3 = iterator.next();
+
+    await Promise.all([promise1, promise2, promise3]);
+
+    // The time needed to resolve all three reads should be 100ms, NOT 300ms
+    expect(Date.now() - startTime).to.be.at.least(100).and.below(100 + TIME_BUFFER);
+
+    // All three values should have been read at roughly the same time
+    expect(callTimes[0]).to.be.at.most(TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(TIME_BUFFER);
   });
 
   it("should ignore multiple calls to end()", async () => {

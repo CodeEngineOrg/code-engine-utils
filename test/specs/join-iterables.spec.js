@@ -113,7 +113,7 @@ describe("joinIterables() function", () => {
 
     expect(items).to.be.an("array").with.lengthOf(14);
     expect(items).to.deep.equal([
-      1, "a", "foo", "bar", "baz", 101, 2, 3, 4, "b", "c", "d", 102, 103
+      1, "a", "foo", "bar", "baz", 101, 2, 4, "c", 3, "b", "d", 102, 103
     ]);
   });
 
