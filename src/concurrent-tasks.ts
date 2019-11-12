@@ -4,7 +4,7 @@ import { ono } from "ono";
 /**
  * Concurrently runs async tasks, up to a specified limit at a time.
  */
-export class ConcurrentTasks {
+export class ConcurrentTasks<T = unknown> {
   /** @internal */
   private _concurrency: number;
 
@@ -12,10 +12,17 @@ export class ConcurrentTasks {
   private _taskId = 0;
 
   /** @internal */
-  private _tasks = new Map<number, Promise<number>>();
+  private _tasks = new Map<number, Promise<[number, T]>>();
 
   public constructor(concurrency: number) {
     this._concurrency = validate.number.integer.positive(concurrency, "concurrency");
+  }
+
+  /**
+   * Indicates whether there are any available task slots.
+   */
+  public get isAvailable() {
+    return this._tasks.size < this._concurrency;
   }
 
   /**
@@ -24,8 +31,8 @@ export class ConcurrentTasks {
    * Call `waitForAvailability()` first to ensure that there's an open slot available;
    * otherwise an error will be thrown.
    */
-  public add(task: Promise<unknown>): void {
-    if (this._tasks.size >= this._concurrency) {
+  public add(task: Promise<T>): void {
+    if (!this.isAvailable) {
       throw ono.range(`Attempted to run too many concurrent tasks. Max is ${this._concurrency}.`);
     }
 
@@ -33,29 +40,44 @@ export class ConcurrentTasks {
     let id = ++this._taskId;
 
     // Add this task to the list, and return its ID when it completes
-    this._tasks.set(id, Promise.resolve(task).then(() => id));
+    this._tasks.set(id, Promise.resolve(task).then((result) => [id, result]));
+  }
+
+  /**
+   * Waits for the first task to finish, and returns its result.
+   */
+  public async race(): Promise<T> {
+    let promises = [...this._tasks.values()];
+
+    if (promises.length === 0) {
+      throw ono.range(`There are no pending tasks.`);
+    }
+
+    // Wait for a task to finish
+    let [taskId, result] = await Promise.race(promises);
+
+    // Remove the finished task
+    this._tasks.delete(taskId);
+
+    return result;
   }
 
   /**
    * Waits for an available task slot.
    */
-  public async waitForAvailability() {
-    if (this._tasks.size < this._concurrency) {
+  public async waitForAvailability(): Promise<void> {
+    if (this.isAvailable) {
       // There's already an open slot, so return immediately
       return;
     }
 
-    // Wait for a task to finish
-    let taskId = await Promise.race(this._tasks.values());
-
-    // Remove the finished task
-    this._tasks.delete(taskId);
+    await this.race();
   }
 
   /**
    * Waits for all current tasks to complete.
    */
-  public async waitForAll() {
+  public async waitForAll(): Promise<void> {
     await Promise.all(this._tasks.values());
   }
 }
