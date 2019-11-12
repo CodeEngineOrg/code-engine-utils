@@ -2,7 +2,7 @@
 
 const { iterate } = require("../../");
 const { assert, expect } = require("chai");
-const delayed = require("../utils/delayed");
+const { delay } = require("../utils");
 
 describe("iterate() function", () => {
 
@@ -280,7 +280,7 @@ describe("iterate() function", () => {
     let slowIterator = {
       async next () {
         callTimes.push(Date.now() - startTime);           // Record the time that next() was called
-        return await delayed({ value: null }, 100);       // Each call to next() takes 100ms to resolve
+        return await delay(100, { value: null });         // Each call to next() takes 100ms to resolve
       }
     };
 
@@ -310,7 +310,7 @@ describe("iterate() function", () => {
     async function* slowGenerator () {
       while (true) {
         callTimes.push(Date.now() - startTime);           // Record the time that next() was called
-        yield await delayed(null, 100);                   // Each call to next() takes 100ms to resolve
+        yield await delay(100);                           // Each call to next() takes 100ms to resolve
       }
     }
 

@@ -2,7 +2,7 @@
 
 const { drainIterable } = require("../../");
 const { assert, expect } = require("chai");
-const delayed = require("../utils/delayed");
+const { delay } = require("../utils");
 const sinon = require("sinon");
 
 describe("drainIterable() function", () => {
@@ -98,9 +98,9 @@ describe("drainIterable() function", () => {
   it("should propagate errors from iterables", async () => {
     async function* source () {
       yield 1;
-      await delayed();
+      await delay(50);
       yield 2;
-      await delayed();
+      await delay(50);
       throw new TypeError("Boom!");
     }
 

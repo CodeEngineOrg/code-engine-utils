@@ -2,7 +2,7 @@
 
 const { iterate, joinIterables } = require("../../");
 const { assert, expect } = require("chai");
-const delayed = require("../utils/delayed");
+const { delay, createIterator } = require("../utils");
 
 describe("joinIterables() function", () => {
 
@@ -75,7 +75,7 @@ describe("joinIterables() function", () => {
     let source = createIterator([
       { value: 1 },
       { value: 2 },
-      delayed({ value: 3 }),
+      delay(50, { value: 3 }),
       { value: 4 },
     ]);
 
@@ -88,20 +88,20 @@ describe("joinIterables() function", () => {
   it("should return all items, in first-available order, from multiple sources", async () => {
     let source1 = createIterator([
       { value: 1 },
-      delayed({ value: 2 }),
-      delayed({ value: 3 }),
+      delay(50, { value: 2 }),
+      delay(50, { value: 3 }),
       { value: 4 },
     ]);
     let source2 = createIterator([
       { value: "a" },
-      delayed({ value: "b" }),
+      delay(50, { value: "b" }),
       { value: "c" },
-      delayed({ value: "d" }),
+      delay(50, { value: "d" }),
     ]);
     let source3 = createIterator([
-      delayed({ value: 101 }, 0),
-      delayed({ value: 102 }, 50),
-      delayed({ value: 103 }, 50),
+      delay(0, { value: 101 }),
+      delay(50, { value: 102 }),
+      delay(50, { value: 103 }),
     ]);
     let source4 = createIterator([
       { value: "foo" },
@@ -176,9 +176,9 @@ describe("joinIterables() function", () => {
 
     async function* source2 () {
       yield 1;
-      delayed();
+      delay(50);
       yield 2;
-      delayed();
+      delay(50);
       throw new TypeError("Boom!");
     }
 
@@ -197,9 +197,9 @@ describe("joinIterables() function", () => {
   it("should propagate errors that occur after reads", async () => {
     async function* source () {
       yield 1;
-      delayed();
+      delay(50);
       yield 2;
-      delayed();
+      delay(50);
       throw new TypeError("Boom!");
     }
 
@@ -221,13 +221,5 @@ describe("joinIterables() function", () => {
       expect(error.message).to.equal("Boom!");
     }
   });
-
-  function createIterator (results) {
-    return {
-      next () {
-        return results.shift() || { done: true };
-      }
-    };
-  }
 
 });

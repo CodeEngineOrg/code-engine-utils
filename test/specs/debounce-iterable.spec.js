@@ -2,7 +2,7 @@
 
 const { debounceIterable } = require("../../");
 const { assert, expect } = require("chai");
-const delayed = require("../utils/delayed");
+const { delay } = require("../utils");
 
 describe("debounceIterable() function", () => {
 
@@ -24,7 +24,7 @@ describe("debounceIterable() function", () => {
 
   it("should iterate over a delayed single-value iterable", async () => {
     async function* generator () {
-      yield await delayed("Hello, world", 100);
+      yield await delay(100, "Hello, world");
     }
 
     let debounced = debounceIterable(generator(), 300);
@@ -46,8 +46,8 @@ describe("debounceIterable() function", () => {
 
   it("should combine all values received until the next read", async () => {
     async function* generator () {
-      yield* await delayed("Hello", 50);
-      yield* await delayed("World", 50);
+      yield* await delay(50, "Hello");
+      yield* await delay(50, "World");
     }
 
     let debounced = debounceIterable(generator(), 300);
@@ -61,13 +61,13 @@ describe("debounceIterable() function", () => {
   it("should combine all values that are yielded before the first read", async () => {
     async function* generator () {
       yield "Hello";
-      yield* await delayed("World", 50);
-      yield* await delayed([1, 2, 3], 50);
-      yield* await delayed([4, 5, 6], 50);
+      yield* await delay(50, "World");
+      yield* await delay(50, [1, 2, 3]);
+      yield* await delay(50, [4, 5, 6]);
     }
 
     let debounced = debounceIterable(generator(), 100);
-    await delayed(null, 300);
+    await delay(300);
     let items = await debounced.all();
 
     expect(items).to.deep.equal([
@@ -77,8 +77,8 @@ describe("debounceIterable() function", () => {
 
   it("should yield values at the soonest possible read", async () => {
     async function* generator () {
-      yield* await delayed("Hello", 300);
-      yield* await delayed("World", 300);
+      yield* await delay(300, "Hello");
+      yield* await delay(300, "World");
     }
 
     let debounced = debounceIterable(generator(), 50);
@@ -94,16 +94,16 @@ describe("debounceIterable() function", () => {
     async function* generator () {
       yield "Hello";
       yield ", ";
-      yield* await delayed("World", 150);
+      yield* await delay(150, "World");
       yield "!";
-      yield* await delayed([1, 2, 3], 300);
-      yield* await delayed([4, 5, 6], 10);
+      yield* await delay(300, [1, 2, 3]);
+      yield* await delay(10, [4, 5, 6]);
       yield* [7, 8, 9];
-      yield await delayed(10, 200);
+      yield await delay(200, 10);
     }
 
     let debounced = debounceIterable(generator(), 100);
-    await delayed(null, 100);
+    await delay(100);
     let items = await debounced.all();
 
     expect(items).to.deep.equal([
@@ -161,8 +161,8 @@ describe("debounceIterable() function", () => {
   it("should propagate errors from iterables", async () => {
     async function* source () {
       yield 1;
-      yield await delayed(2, 50);
-      yield await delayed(3, 300);
+      yield await delay(50, 2);
+      yield await delay(300, 3);
       throw new TypeError("Boom!");
     }
 
@@ -179,14 +179,14 @@ describe("debounceIterable() function", () => {
   it("should propagate errors from iterables that occur before the first read", async () => {
     async function* source () {
       yield 1;
-      yield await delayed(2, 50);
-      yield await delayed(3, 50);
+      yield await delay(50, 2);
+      yield await delay(50, 3);
       throw new TypeError("Boom!");
     }
 
     try {
       let debounced = debounceIterable(source(), 200);
-      await delayed(null, 300);
+      await delay(300);
       await debounced.all();
       assert.fail("An error should have been thrown.");
     }

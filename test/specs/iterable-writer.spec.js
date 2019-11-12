@@ -2,13 +2,13 @@
 
 const { IterableWriter } = require("../../");
 const { assert, expect } = require("chai");
-const delayed = require("../utils/delayed");
+const { delay, createIterator } = require("../utils");
 
 describe("IterableWriter class", () => {
 
-  function delayedRead (writer, delay = 200) {
+  function delayedRead (writer, _delay = 200) {
     return new Promise((resolve) => {
-      setTimeout(() => resolve(writer.iterable.all()), delay);
+      setTimeout(() => resolve(writer.iterable.all()), _delay);
     });
   }
 
@@ -137,7 +137,7 @@ describe("IterableWriter class", () => {
     writer.writeFrom(["Wilma", "Barney"]);
     writer.write("Betty");
 
-    await delayed(undefined, 200);
+    await delay(200);
 
     await writer.write("Pebbles");
     await writer.writeFrom(["Bam Bam"]);
@@ -200,7 +200,7 @@ describe("IterableWriter class", () => {
     let helloPromise = Promise.resolve("Hello, world");
     await writer.write(helloPromise);
 
-    let goodbyePromise = delayed("Goodbye, world");
+    let goodbyePromise = delay(50, "Goodbye, world");
     await writer.write(goodbyePromise);
 
     await writer.end();
