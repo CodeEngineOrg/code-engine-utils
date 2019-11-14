@@ -16,8 +16,17 @@ interface Source<T> {
 /**
  * Joins multiple iterables into a single one that yields values in first-available order.
  */
-export function joinIterables<T>(...sources: Array<AsyncIterable<T>>): AsyncAllIterable<T> {
+export function joinIterables<T>(...iterables: Array<AsyncIterable<T>>): AsyncAllIterable<T> {
+  let sources = iterables.map((iterable) => ({
+    iterator: demandIterator(iterable),
+    pendingReads: 0,
+    done: false,
+  }));
+
   let writer = new IterableWriter<T>();
+  writer.onRead = readFromSources;
+  return writer.iterable;
+
   /**
    * Reads the next value from the first available source.
    */
