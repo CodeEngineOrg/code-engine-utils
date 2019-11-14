@@ -1,18 +1,7 @@
 import { AsyncAllIterableIterator } from "@code-engine/types";
 import { ono } from "ono";
-import { demandIterator } from "./get-iterator";
 import { iterateAll } from "./iterate-all";
 import { pending, Pending } from "./pending";
-
-/**
- * An iterable source that can be "piped" through an `IterableWriter`.
- * @internal
- */
-interface Source<T> {
-  iterator: Iterator<T> | AsyncIterator<T>;
-  pendingReads: number;
-  done?: boolean;
-}
 
 /**
  * Writes values to an asynchronous iterable.
@@ -28,7 +17,6 @@ export class IterableWriter<T> {
   private _pendingEnd = pending<void>();
 
   /** @internal */
-  private _sources: Array<Source<T>> = [];
 
   /** @internal */
   private _doneWriting = false;
@@ -136,9 +124,6 @@ export class IterableWriter<T> {
         this._pendingEnd.resolve();
       }
       else {
-        if (this._sources.length > 0) {
-          // Read the next source value to fulfill this pending read
-          this._readNextSourceValue();
         }
 
         break;
@@ -147,77 +132,12 @@ export class IterableWriter<T> {
   }
 
   /**
-   * Reads the next value from the first available source.
-   */
-  private _readNextSourceValue() {
-    let activeSources = this._sources.filter((source) => !source.done);
-    let hasZeroPending = activeSources.filter((source) => source.pendingReads === 0);
-
-    if (hasZeroPending.length > 0) {
-      // We should hve at least one pending read for each source,
-      // since we don't know which source will provide a value first.
-      for (let source of hasZeroPending) {
-        source.pendingReads++;
-        this._readNextFromSource(source);    // tslint:disable-line: no-floating-promises
-      }
-    }
-    else if (activeSources.length > 0) {
-      let sourceToReadFrom = activeSources[0];
-
-      // Find the source with the fewest pending reads
-      for (let source of activeSources) {
-        if (source.pendingReads < sourceToReadFrom.pendingReads) {
-          sourceToReadFrom = source;
-        }
-      }
-
-      sourceToReadFrom.pendingReads++;
-      this._readNextFromSource(sourceToReadFrom);    // tslint:disable-line: no-floating-promises
-    }
-  }
-
-  /**
-   * Reads the next value from the specified source and adds it to the iterator's value queue.
-   */
-  private async _readNextFromSource(source: Source<T>): Promise<void> {
-    try {
-      // Read the next value from the source
-      let result = await source.iterator.next();
-
-      // Decrement the pending read counter, now that this read is complete
-      source.pendingReads--;
-
-      if (result.done) {
-        source.done = true;
-      }
-      else {
-        // Add the value to our queue
-        this._values.push(() => result.value as T);
-      }
-
-      if (source.done && source.pendingReads === 0) {
-        // This source is done, so remove it from the list
-        let index = this._sources.indexOf(source);
-        index >= 0 && this._sources.splice(index, 1);
-      }
-    }
-    catch (error) {
-      // The source threw an error, so our iterator needs to re-throw it.
-      // So add a "value" to our queue that throws an error when read.
-      this._values.push(() => { throw error; });
-    }
-
-    this._resolvePendingReads();
-  }
-
-  /**
    * Determines whether all values have been written and read.
    * @internal
    */
   private _allDone() {
     return this._doneWriting &&
-      this._values.length === 0 &&
-      this._sources.length === 0;
+      this._values.length === 0;
   }
 
   /**
