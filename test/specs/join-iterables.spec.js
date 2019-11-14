@@ -92,19 +92,19 @@ describe("joinIterables() function", () => {
     let source1 = createIterator([
       { value: 1 },
       delay(50, { value: 2 }),
-      delay(50, { value: 3 }),
+      delay(100, { value: 3 }),
       { value: 4 },
     ]);
     let source2 = createIterator([
       { value: "a" },
       delay(50, { value: "b" }),
       { value: "c" },
-      delay(50, { value: "d" }),
+      delay(100, { value: "d" }),
     ]);
     let source3 = createIterator([
       delay(0, { value: 101 }),
       delay(50, { value: 102 }),
-      delay(50, { value: 103 }),
+      delay(100, { value: 103 }),
     ]);
     let source4 = createIterator([
       { value: "foo" },
@@ -116,8 +116,140 @@ describe("joinIterables() function", () => {
 
     expect(items).to.be.an("array").with.lengthOf(14);
     expect(items).to.deep.equal([
-      1, "a", "foo", "bar", "baz", 101, 2, 4, "c", 3, "b", "d", 102, 103
+      1, "a", "foo", "bar", "baz", 101, 2, "b", "c", 102, 3, 4, "d", 103
     ]);
+  });
+
+  it("should return all items, in first-available order, from multiple sources, simultaneously", async () => {
+    let source1 = createIterator([
+      { value: 1 },
+      delay(50, { value: 2 }),
+      delay(100, { value: 3 }),
+      { value: 4 },
+    ]);
+    let source2 = createIterator([
+      { value: "a" },
+      delay(50, { value: "b" }),
+      { value: "c" },
+      delay(100, { value: "d" }),
+    ]);
+    let source3 = createIterator([
+      delay(0, { value: 101 }),
+      delay(50, { value: 102 }),
+      delay(100, { value: 103 }),
+    ]);
+    let source4 = createIterator([
+      { value: "foo" },
+      { value: "bar" },
+      { value: "baz" },
+    ]);
+
+    let iterator = joinIterables(source1, source2, source3, source4)[Symbol.asyncIterator]();
+
+    // Read all values (and more!) simultaneously
+    let promises = [];
+    for (let i = 0; i < 20; i++) {
+      promises.push(iterator.next());
+    }
+
+    let items = await Promise.all(promises);
+
+    expect(items).to.deep.equal([
+      { value: 1 },
+      { value: "a" },
+      { value: "foo" },
+      { value: "bar" },
+      { value: "c" },
+      { value: "baz" },
+      { value: 4 },
+      { value: 101 },
+      { value: 2 },
+      { value: "b" },
+      { value: 102 },
+      { value: 3 },
+      { value: "d" },
+      { value: 103 },
+      { done: true, value: undefined },
+      { done: true, value: undefined },
+      { done: true, value: undefined },
+      { done: true, value: undefined },
+      { done: true, value: undefined },
+      { done: true, value: undefined },
+    ]);
+  });
+
+  it("should read values from the iterable as soon as next() is called", async () => {
+    let startTime = Date.now();
+    let callTimes = [];                                   // Keeps to rack of each time next() is called
+
+    let slowIterator = {
+      async next () {
+        callTimes.push(Date.now() - startTime);           // Record the time that next() was called
+        return await delay(100, { value: "Hi" });         // Each call to next() takes 100ms to resolve
+      }
+    };
+
+    let iterator = joinIterables(slowIterator)[Symbol.asyncIterator]();
+
+    // Read multiple values simultaneously
+    let promise1 = iterator.next();
+    let promise2 = iterator.next();
+    let promise3 = iterator.next();
+
+    await Promise.all([promise1, promise2, promise3]);
+
+    // The time needed to resolve all three reads should be 100ms, NOT 300ms
+    expect(Date.now() - startTime).to.be.at.least(100).and.below(100 + TIME_BUFFER);
+
+    // All three values should have been read at roughly the same time
+    expect(callTimes[0]).to.be.at.most(TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(TIME_BUFFER);
+  });
+
+  it("should read values from all iterables simultaneously", async () => {
+    let startTime = Date.now();
+    let slowCallTimes = [], slowerCallTimes = [];         // Keeps to rack of each time next() is called
+
+    let slowIterator = {
+      async next () {
+        slowCallTimes.push(Date.now() - startTime);       // Record the time that next() was called
+        return await delay(100, { value: "A" });          // Each call to next() takes 100ms to resolve
+      }
+    };
+
+    let slowerIterator = {
+      async next () {
+        slowerCallTimes.push(Date.now() - startTime);     // Record the time that next() was called
+        return await delay(500, { value: "B" });          // Each call to next() takes 500ms to resolve
+      }
+    };
+
+    let iterator = joinIterables(slowIterator, slowerIterator)[Symbol.asyncIterator]();
+
+    // Read a single value
+    let result = await iterator.next();
+    expect(result.value).to.equal("A");
+    expect(Date.now() - startTime).to.be.at.least(100).and.below(100 + TIME_BUFFER);
+
+    // Both iterators should have been called once, at the same time
+    expect(slowCallTimes).to.have.lengthOf(1);
+    expect(slowCallTimes[0]).to.be.at.most(TIME_BUFFER);
+
+    expect(slowerCallTimes).to.have.lengthOf(1);
+    expect(slowerCallTimes[0]).to.be.at.most(TIME_BUFFER);
+
+    // Read another value
+    result = await iterator.next();
+    expect(result.value).to.equal("A");
+    expect(Date.now() - startTime).to.be.at.least(200).and.below(200 + TIME_BUFFER);
+
+    // The first iterator should have been called a second time
+    expect(slowCallTimes).to.have.lengthOf(2);
+    expect(slowCallTimes[1]).to.be.at.least(100).and.at.most(100 + TIME_BUFFER);
+
+    // The second iterator should NOT have been called again
+    expect(slowerCallTimes).to.have.lengthOf(1);
   });
 
   it("should throw an error if called with a non-iterable value", async () => {
@@ -128,6 +260,23 @@ describe("joinIterables() function", () => {
     catch (error) {
       expect(error).to.be.an.instanceOf(TypeError);
       expect(error.message).to.equal("12345 is not iterable.");
+    }
+  });
+
+  it("should throw an error if an iterable returns an invalid result", async () => {
+    let badIterator = {
+      next () {
+        return null;
+      }
+    };
+
+    try {
+      await joinIterables(badIterator).all();
+      assert.fail("An error should have been thrown.");
+    }
+    catch (error) {
+      expect(error).to.be.an.instanceOf(TypeError);
+      expect(error.message).to.equal("Cannot read property 'done' of null");
     }
   });
 
