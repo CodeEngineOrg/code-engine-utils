@@ -17,6 +17,7 @@ export class IterableWriter<T> {
   private _pendingEnd = pending<void>();
 
   /** @internal */
+  private _onRead?: () => void;
 
   /** @internal */
   private _doneWriting = false;
@@ -26,6 +27,23 @@ export class IterableWriter<T> {
    */
   public readonly iterable: AsyncAllIterableIterator<T>;
 
+  /**
+   * An optional event handler that is called whenever the consumer tries to read a value but none
+   * have been written yet.  This event handler should call the `write()` method to supply a value
+   * as soon as possible.
+   */
+  public get onRead() {
+    return this._onRead;
+  }
+
+  public set onRead(value: (() => void) | undefined) {
+    if (value && this._onRead) {
+      throw ono(`Only one "onRead" event handler is allowed.`);
+    }
+
+    this._onRead = value;
+  }
+
   public constructor() {
     this.iterable = {
       [Symbol.asyncIterator]() {
@@ -34,6 +52,13 @@ export class IterableWriter<T> {
       all: iterateAll,
       next: () => this._read(),
     };
+  }
+
+  /**
+   * Indicates whether the consumer is currently awaiting a value.
+   */
+  public get hasPendingReads(): boolean {
+    return this._pendingReads.length > 0;
   }
 
   /**
@@ -124,6 +149,9 @@ export class IterableWriter<T> {
         this._pendingEnd.resolve();
       }
       else {
+        if (this._onRead) {
+          // Raise the "onRead" event, to let the writer know that a value is needed
+          this._onRead();
         }
 
         break;
