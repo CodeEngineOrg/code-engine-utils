@@ -4,6 +4,9 @@ const { iterate } = require("../../");
 const { assert, expect } = require("chai");
 const { delay } = require("../utils");
 
+// CI environments are slow, so use a larger time buffer
+const TIME_BUFFER = process.env.CI ? 75 : 30;
+
 describe("iterate() function", () => {
 
   it("should return an empty iterator if called with no args", async () => {
@@ -273,7 +276,6 @@ describe("iterate() function", () => {
   });
 
   it("should read values from an async iterator concurrently", async () => {
-    const TIME_BUFFER = process.env.CI ? 75 : 30;         // CI environments are slow, so use a larger time buffer
     let startTime = Date.now();
     let callTimes = [];                                   // Keeps to rack of each time next() is called
 
@@ -303,7 +305,6 @@ describe("iterate() function", () => {
   });
 
   it("should read values from an async generator sequentially", async () => {
-    const TIME_BUFFER = process.env.CI ? 75 : 30;         // CI environments are slow, so use a larger time buffer
     let startTime = Date.now();
     let callTimes = [];                                   // Keeps to rack of each time next() is called
 

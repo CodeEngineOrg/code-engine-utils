@@ -4,6 +4,9 @@ const { IterableWriter } = require("../../");
 const { assert, expect } = require("chai");
 const { delay, createIterator } = require("../utils");
 
+// CI environments are slow, so use a larger time buffer
+const TIME_BUFFER = process.env.CI ? 75 : 30;
+
 describe("IterableWriter class", () => {
 
   function delayedRead (writer, _delay = 200) {
