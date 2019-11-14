@@ -65,29 +65,14 @@ export class IterableWriter<T> {
    * Writes a value to the iterable and waits for it to be read.
    */
   public async write(value: T): Promise<void> {
-    this._assertWritable();
-
-    // This promise resolves when the value is read
-    await new Promise((resolve) => {
-      // Store a function that resolves the write() promise when the value is read
-      this._values.push(() => {
-        resolve();
-        return value;
-      });
-
-      // If there are any pending reads, then read them now that we have data
-      this._resolvePendingReads();
-    });
+    await this._write(() => value);
   }
 
   /**
-   * Writes all values from the given source to the iterable.
+   * Causes the iterable to throw the specified error when read.
    */
-  public writeFrom(source: AsyncIterable<T>): void {
-    this._assertWritable();
-    let iterator = demandIterator(source);
-    this._sources.push({ iterator, pendingReads: 0 });
-    this._resolvePendingReads();
+  public async throw(error: Error): Promise<void> {
+    await this._write(() => { throw error; });
   }
 
   /**
@@ -97,6 +82,26 @@ export class IterableWriter<T> {
     this._doneWriting = true;
     this._resolvePendingReads();
     await this._pendingEnd.promise;
+  }
+
+  /**
+   * Writes a value to the iterable and waits for it to be read.
+   * @internal
+   */
+  private async _write(getValue: () => T): Promise<void> {
+    this._assertWritable();
+
+    // This promise resolves when the value is read
+    await new Promise((resolve) => {
+      // Store a function that resolves the write() promise when the value is read
+      this._values.push(() => {
+        resolve();
+        return getValue();
+      });
+
+      // If there are any pending reads, then read them now that we have data
+      this._resolvePendingReads();
+    });
   }
 
   /**
