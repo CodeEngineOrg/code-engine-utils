@@ -1,21 +1,16 @@
-import { ConcurrentTasks } from "./concurrent-tasks";
-import { demandIterator } from "./get-iterator";
+import { iterateParallel } from "./iterate-parallel";
 
 /**
- * Iterates over all values in an async iterable to trigger any side-effects of reading each value.
+ * Iterates over all values in an async iterable.
+ * Unlike `iterateAll()`, the values are immediately discarded, so very little memory is consumed.
  */
 export async function drainIterable<T>(iterable: AsyncIterable<T>, concurrency = 1): Promise<void> {
-  let iterator = demandIterator(iterable);
-  let concurrentReads = new ConcurrentTasks(concurrency);
-  let done = false;
+  let iterator = iterateParallel(iterable, concurrency)[Symbol.asyncIterator]();
 
-  while (!done) {
-    await concurrentReads.waitForAvailability();
-    let promise = Promise.resolve(iterator.next()).then(isDone);
-    concurrentReads.add(promise);
-  }
-
-  function isDone(result: IteratorResult<T>) {
-    done = done || result.done === true;
+  while (true) {
+    let { done } = await iterator.next();
+    if (done) {
+      break;
+    }
   }
 }
