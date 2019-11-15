@@ -123,6 +123,11 @@ export class IterableWriter<T> {
       let pendingRead = pending<IteratorResult<T>>();
       this._pendingReads.push(pendingRead);
 
+      if (this._onRead) {
+        // Raise the "onRead" event, to let the writer know that a value is needed
+        this._onRead();
+      }
+
       this._resolvePendingReads();
       return pendingRead.promise;
     }
@@ -154,11 +159,6 @@ export class IterableWriter<T> {
         this._pendingEnd.resolve();
       }
       else {
-        if (this._onRead) {
-          // Raise the "onRead" event, to let the writer know that a value is needed
-          this._onRead();
-        }
-
         break;
       }
     }
