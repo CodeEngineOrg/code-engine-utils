@@ -6,7 +6,7 @@ const { delay } = require("../utils");
 const sinon = require("sinon");
 
 // CI environments are slow, so use a larger time buffer
-const TIME_BUFFER = process.env.CI ? 75 : 30;
+const TIME_BUFFER = process.env.CI ? 100 : 30;
 
 describe("IterableWriter class", () => {
 

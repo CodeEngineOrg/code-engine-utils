@@ -5,7 +5,7 @@ const { assert, expect } = require("chai");
 const { delay, createIterator } = require("../utils");
 
 // CI environments are slow, so use a larger time buffer
-const TIME_BUFFER = process.env.CI ? 75 : 30;
+const TIME_BUFFER = process.env.CI ? 100 : 30;
 
 describe("joinIterables() function", () => {
 
