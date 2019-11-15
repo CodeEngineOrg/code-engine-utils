@@ -277,7 +277,7 @@ describe("iterate() function", () => {
 
   it("should read values from an async iterator concurrently", async () => {
     let startTime = Date.now();
-    let callTimes = [];                                   // Keeps to rack of each time next() is called
+    let callTimes = [];                                   // Keeps track of each time next() is called
 
     let slowIterator = {
       async next () {
@@ -306,7 +306,7 @@ describe("iterate() function", () => {
 
   it("should read values from an async generator sequentially", async () => {
     let startTime = Date.now();
-    let callTimes = [];                                   // Keeps to rack of each time next() is called
+    let callTimes = [];                                   // Keeps track of each time next() is called
 
     async function* slowGenerator () {
       while (true) {

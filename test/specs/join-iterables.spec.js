@@ -180,7 +180,7 @@ describe("joinIterables() function", () => {
 
   it("should read values from the iterable as soon as next() is called", async () => {
     let startTime = Date.now();
-    let callTimes = [];                                   // Keeps to rack of each time next() is called
+    let callTimes = [];                                   // Keeps track of each time next() is called
 
     let slowIterator = {
       async next () {

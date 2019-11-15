@@ -267,7 +267,7 @@ describe("IterableWriter class", () => {
 
   it("should call the onRead event handler as soon as next() is called", async () => {
     let startTime = Date.now();
-    let callTimes = [];                                   // Keeps to rack of each time onRead() is called
+    let callTimes = [];                                   // Keeps track of each time onRead() is called
 
     async function onRead () {
       callTimes.push(Date.now() - startTime);             // Record the time that onRead() was called
