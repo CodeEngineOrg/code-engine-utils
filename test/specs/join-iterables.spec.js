@@ -3,9 +3,10 @@
 const { iterate, joinIterables } = require("../../");
 const { assert, expect } = require("chai");
 const { delay, createIterator } = require("../utils");
+const sinon = require("sinon");
 
 // CI environments are slow, so use a larger time buffer
-const TIME_BUFFER = process.env.CI ? 100 : 30;
+const TIME_BUFFER = process.env.CI ? 100 : 50;
 
 describe("joinIterables() function", () => {
 
@@ -199,7 +200,7 @@ describe("joinIterables() function", () => {
     await Promise.all([promise1, promise2, promise3]);
 
     // The time needed to resolve all three reads should be 100ms, NOT 300ms
-    expect(Date.now() - startTime).to.be.at.least(100).and.below(100 + TIME_BUFFER);
+    expect(Date.now() - startTime).to.be.at.least(100).and.at.most(100 + TIME_BUFFER);
 
     // All three values should have been read at roughly the same time
     expect(callTimes[0]).to.be.at.most(TIME_BUFFER);
@@ -209,47 +210,131 @@ describe("joinIterables() function", () => {
 
   it("should read values from all iterables simultaneously", async () => {
     let startTime = Date.now();
-    let slowCallTimes = [], slowerCallTimes = [];         // Keeps to rack of each time next() is called
 
     let slowIterator = {
-      async next () {
-        slowCallTimes.push(Date.now() - startTime);       // Record the time that next() was called
+      next: sinon.spy(async () => {
         return await delay(100, { value: "A" });          // Each call to next() takes 100ms to resolve
-      }
+      }),
     };
 
-    let slowerIterator = {
-      async next () {
-        slowerCallTimes.push(Date.now() - startTime);     // Record the time that next() was called
+    let verySlowIterator = {
+      next: sinon.spy(async () => {
         return await delay(500, { value: "B" });          // Each call to next() takes 500ms to resolve
-      }
+      }),
     };
 
-    let iterator = joinIterables(slowIterator, slowerIterator)[Symbol.asyncIterator]();
+    let iterator = joinIterables(slowIterator, verySlowIterator)[Symbol.asyncIterator]();
 
-    // Read a single value
-    let result = await iterator.next();
-    expect(result.value).to.equal("A");
-    expect(Date.now() - startTime).to.be.at.least(100).and.below(100 + TIME_BUFFER);
+    let promise1 = iterator.next();
 
-    // Both iterators should have been called once, at the same time
-    expect(slowCallTimes).to.have.lengthOf(1);
-    expect(slowCallTimes[0]).to.be.at.most(TIME_BUFFER);
+    // Both iterators should have been called once
+    sinon.assert.calledOnce(slowIterator.next);
+    sinon.assert.calledOnce(verySlowIterator.next);
 
-    expect(slowerCallTimes).to.have.lengthOf(1);
-    expect(slowerCallTimes[0]).to.be.at.most(TIME_BUFFER);
+    let promise2 = iterator.next();
 
-    // Read another value
-    result = await iterator.next();
-    expect(result.value).to.equal("A");
-    expect(Date.now() - startTime).to.be.at.least(200).and.below(200 + TIME_BUFFER);
+    // Neither iterator should have been called,
+    // since there have been 2 calls to next() and there are 2 pending results
+    sinon.assert.calledOnce(slowIterator.next);
+    sinon.assert.calledOnce(verySlowIterator.next);
+
+    let promise3 = iterator.next();
 
     // The first iterator should have been called a second time
-    expect(slowCallTimes).to.have.lengthOf(2);
-    expect(slowCallTimes[1]).to.be.at.least(100).and.at.most(100 + TIME_BUFFER);
+    sinon.assert.calledTwice(slowIterator.next);
+    sinon.assert.calledOnce(verySlowIterator.next);
 
-    // The second iterator should NOT have been called again
-    expect(slowerCallTimes).to.have.lengthOf(1);
+    let promise4 = iterator.next();
+
+    // The second iterator should have been called a second time
+    sinon.assert.calledTwice(slowIterator.next);
+    sinon.assert.calledTwice(verySlowIterator.next);
+
+    // The first 2 promises should resolve in 100ms with "A"
+    expect(await promise1).to.deep.equal({ value: "A" });
+    expect(await promise2).to.deep.equal({ value: "A" });
+    expect(Date.now() - startTime).to.be.at.least(100).and.at.most(100 + TIME_BUFFER);
+
+    // The last 2 promises should resolve in 500ms with "B"
+    expect(await promise3).to.deep.equal({ value: "B" });
+    expect(await promise4).to.deep.equal({ value: "B" });
+    expect(Date.now() - startTime).to.be.at.least(500).and.at.most(500 + TIME_BUFFER);
+
+    // Each iterator should have only been called twice
+    sinon.assert.calledTwice(slowIterator.next);
+    sinon.assert.calledTwice(verySlowIterator.next);
+  });
+
+  it("should read from a different iterable if one iterable ends first", async () => {
+    let startTime = Date.now();
+    let callTimes = [];                                   // Keeps track of each time next() is called
+
+    let source1 = {
+      length: 2,                                          // This iterator ends after 2 values
+      async next () {
+        callTimes.push(Date.now() - startTime);           // Record the time that next() was called
+        await delay(100);                                 // Each call to next() takes 100ms to resolve
+
+        if (--this.length < 0) {
+          return { done: true };
+        }
+        else {
+          return { value: "A" };
+        }
+      }
+    };
+
+    let source2 = {
+      async next () {
+        callTimes.push(Date.now() - startTime);           // Record the time that next() was called
+        return await delay(100, { value: "B" });          // Each call to next() takes 100ms to resolve
+      }
+    };
+
+    let iterator = joinIterables(source1, source2)[Symbol.asyncIterator]();
+
+    // Read 2 values at the same time (1 from each source)
+    let promise1 = iterator.next();
+    let promise2 = iterator.next();
+    let items = await Promise.all([promise1, promise2]);
+
+    expect(items).to.deep.equal([
+      { value: "A" },
+      { value: "B" },
+    ]);
+    expect(callTimes).to.have.lengthOf(2);
+    expect(callTimes[0]).to.be.at.most(TIME_BUFFER);
+    expect(callTimes[1]).to.be.at.most(TIME_BUFFER);
+    expect(Date.now() - startTime).to.be.at.least(100).and.at.most(100 + TIME_BUFFER);
+
+    // Read 2 values at the same time (1 from each source)
+    promise1 = iterator.next();
+    promise2 = iterator.next();
+    items = await Promise.all([promise1, promise2]);
+
+    expect(items).to.deep.equal([
+      { value: "A" },
+      { value: "B" },
+    ]);
+    expect(callTimes).to.have.lengthOf(4);
+    expect(callTimes[2]).to.be.at.least(100).and.at.most(100 + TIME_BUFFER);
+    expect(callTimes[3]).to.be.at.least(100).and.at.most(100 + TIME_BUFFER);
+    expect(Date.now() - startTime).to.be.at.least(200).and.at.most(200 + TIME_BUFFER);
+
+    // Read 2 values at the same time (both from the same source, since the first source has ended)
+    promise1 = iterator.next();
+    promise2 = iterator.next();
+    items = await Promise.all([promise1, promise2]);
+
+    expect(items).to.deep.equal([
+      { value: "B" },
+      { value: "B" },
+    ]);
+    expect(callTimes).to.have.lengthOf(7);
+    expect(callTimes[4]).to.be.at.least(200).and.at.most(200 + TIME_BUFFER);
+    expect(callTimes[5]).to.be.at.least(200).and.at.most(200 + TIME_BUFFER);
+    expect(callTimes[6]).to.be.at.least(300).and.at.most(300 + TIME_BUFFER);
+    expect(Date.now() - startTime).to.be.at.least(400).and.at.most(400 + TIME_BUFFER);
   });
 
   it("should throw an error if called with a non-iterable value", async () => {
