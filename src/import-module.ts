@@ -6,7 +6,6 @@ import { threadId } from "worker_threads";
 
 /**
  * CommonJS or ECMAScript module exports.
- * @internal
  */
 export interface ModuleExports {
   default?: unknown;
@@ -20,7 +19,6 @@ export interface ModuleExports {
  *
  * @param moduleId - The name or path of the module to import
  * @param [cwd] - The local directory to start searching for the module
- * @internal
  */
 export async function importModule(moduleId: string, cwd = process.cwd()): Promise<ModuleExports> {
   let filename = resolveFrom.silent(cwd, moduleId) || resolveGlobal.silent(moduleId);
