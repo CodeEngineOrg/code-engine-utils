@@ -5,7 +5,7 @@ const commonJSExport = require("../../");
 const { default: defaultExport } = require("../../");
 const {
   createFile, createChangedFile, normalizeFileInfo, log, importModule, resolveModule, ConcurrentTasks,
-  iterate, iterateAll, iterateParallel, debounceIterable, drainIterable, joinIterables, splitIterable, IterableWriter
+  iterate, iterateParallel, debounceIterable, drainIterable, joinIterables, splitIterable, IterableWriter
 } = require("../../");
 
 describe("@code-engine/utils package exports", () => {
@@ -54,11 +54,6 @@ describe("@code-engine/utils package exports", () => {
     expect(iterate.name).to.equal("iterate");
   });
 
-  it("should export the iterateAll function as a named export", () => {
-    expect(iterateAll).to.be.a("function");
-    expect(iterateAll.name).to.equal("iterateAll");
-  });
-
   it("should export the iterateParallel function as a named export", () => {
     expect(iterateParallel).to.be.a("function");
     expect(iterateParallel.name).to.equal("iterateParallel");
@@ -99,7 +94,6 @@ describe("@code-engine/utils package exports", () => {
       "resolveModule",
       "ConcurrentTasks",
       "iterate",
-      "iterateAll",
       "iterateParallel",
       "debounceIterable",
       "drainIterable",

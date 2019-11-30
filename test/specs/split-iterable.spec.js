@@ -1,6 +1,7 @@
 "use strict";
 
 const { iterate, splitIterable } = require("../../");
+const { iterateAll } = require("../utils");
 const { assert, expect } = require("chai");
 
 describe("splitIterable() function", () => {
@@ -9,9 +10,8 @@ describe("splitIterable() function", () => {
     function isArrayOfIterables (array) {
       expect(array).to.be.an("array");
       for (let it of array) {
-        expect(it).to.be.an("object").with.keys(Symbol.asyncIterator, "all");
+        expect(it).to.be.an("object").with.keys(Symbol.asyncIterator);
         expect(it[Symbol.asyncIterator]).to.be.a("function");
-        expect(it.all).to.be.a("function");
       }
       return true;
     }
@@ -23,29 +23,29 @@ describe("splitIterable() function", () => {
 
   it("should iterate an empty set", async () => {
     let iterables = splitIterable(iterate([]), 5);
-    expect(await iterables[0].all()).to.deep.equal([]);
-    expect(await iterables[1].all()).to.deep.equal([]);
-    expect(await iterables[2].all()).to.deep.equal([]);
-    expect(await iterables[3].all()).to.deep.equal([]);
-    expect(await iterables[4].all()).to.deep.equal([]);
+    expect(await iterateAll(iterables[0])).to.deep.equal([]);
+    expect(await iterateAll(iterables[1])).to.deep.equal([]);
+    expect(await iterateAll(iterables[2])).to.deep.equal([]);
+    expect(await iterateAll(iterables[3])).to.deep.equal([]);
+    expect(await iterateAll(iterables[4])).to.deep.equal([]);
   });
 
   it("should send all values to the first iterable that reads them", async () => {
     let iterables = splitIterable(iterate("abcdefghijklmnopqrstuvwxyz"), 3);
 
-    expect(await iterables[0].all()).to.deep.equal([
+    expect(await iterateAll(iterables[0])).to.deep.equal([
       "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
       "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     ]);
 
-    expect(await iterables[1].all()).to.deep.equal([]);
-    expect(await iterables[2].all()).to.deep.equal([]);
+    expect(await iterateAll(iterables[1])).to.deep.equal([]);
+    expect(await iterateAll(iterables[2])).to.deep.equal([]);
   });
 
   it("should send each value to only one iterable", async () => {
     let iterables = splitIterable(iterate("abcdefghijklmnopqrstuvwxyz"), 3);
 
-    let values = await Promise.all(iterables.map((it) => it.all()));
+    let values = await Promise.all(iterables.map((it) => iterateAll(it)));
 
     expect(values[0].length + values[1].length + values[2].length).to.equal(26);
     expect(values[0]).to.deep.equal(["a", "d", "g", "j", "m", "p", "s", "v", "y"]);
@@ -98,9 +98,9 @@ describe("splitIterable() function", () => {
     }
   });
 
-  it("should throw an error if called with a Promise", async () => {
+  it("should throw an error if called with a Promise", () => {
     try {
-      await splitIterable(Promise.resolve()).all();
+      splitIterable(Promise.resolve());
       assert.fail("An error should have been thrown");
     }
     catch (error) {

@@ -2,20 +2,20 @@
 
 const { debounceIterable } = require("../../");
 const { assert, expect } = require("chai");
-const { delay } = require("../utils");
+const { delay, iterateAll } = require("../utils");
 
 describe("debounceIterable() function", () => {
 
   it("should iterate over an empty iterable", async () => {
     let debounced = debounceIterable([]);
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.have.lengthOf(0);
   });
 
   it("should iterate over a single-value iterable", async () => {
     let debounced = debounceIterable(["Hello, world"]);
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.deep.equal([
       ["Hello, world"]
@@ -28,7 +28,7 @@ describe("debounceIterable() function", () => {
     }
 
     let debounced = debounceIterable(generator(), 300);
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.deep.equal([
       ["Hello, world"]
@@ -37,7 +37,7 @@ describe("debounceIterable() function", () => {
 
   it("should iterate over a multi-value iterable", async () => {
     let debounced = debounceIterable("Hello, world");
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.deep.equal([
       ["H", "e", "l", "l", "o", ",", " ", "w", "o", "r", "l", "d"]
@@ -51,7 +51,7 @@ describe("debounceIterable() function", () => {
     }
 
     let debounced = debounceIterable(generator(), 300);
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.deep.equal([
       ["H", "e", "l", "l", "o", "W", "o", "r", "l", "d"]
@@ -68,7 +68,7 @@ describe("debounceIterable() function", () => {
 
     let debounced = debounceIterable(generator(), 100);
     await delay(300);
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.deep.equal([
       ["Hello", "W", "o", "r", "l", "d", 1, 2, 3, 4, 5, 6],
@@ -82,7 +82,7 @@ describe("debounceIterable() function", () => {
     }
 
     let debounced = debounceIterable(generator(), 50);
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.deep.equal([
       ["H", "e", "l", "l", "o"],
@@ -104,7 +104,7 @@ describe("debounceIterable() function", () => {
 
     let debounced = debounceIterable(generator(), 100);
     await delay(100);
-    let items = await debounced.all();
+    let items = await iterateAll(debounced);
 
     expect(items).to.deep.equal([
       ["Hello", ", "],
@@ -166,8 +166,10 @@ describe("debounceIterable() function", () => {
       throw new TypeError("Boom!");
     }
 
+    let debounced = debounceIterable(source(), 200);
+
     try {
-      await debounceIterable(source(), 200).all();
+      await iterateAll(debounced);
       assert.fail("An error should have been thrown.");
     }
     catch (error) {
@@ -184,10 +186,11 @@ describe("debounceIterable() function", () => {
       throw new TypeError("Boom!");
     }
 
+    let debounced = debounceIterable(source(), 200);
+    await delay(300);
+
     try {
-      let debounced = debounceIterable(source(), 200);
-      await delay(300);
-      await debounced.all();
+      await iterateAll(debounced);
       assert.fail("An error should have been thrown.");
     }
     catch (error) {

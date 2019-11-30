@@ -30,6 +30,23 @@ module.exports = {
   },
 
   /**
+   * Iterates over all items in an async iterable and returns them as an array.
+   *
+   * This is a workaround for the lack of an async spread operator and/or support for async iterables
+   * in `Promise.all()`.
+   *
+   * @see https://github.com/tc39/proposal-async-iteration/issues/103
+   */
+  async iterateAll (iterable) {
+    let items = [];
+    for await (let item of iterable) {
+      items.push(item);
+    }
+
+    return items;
+  },
+
+  /**
    * Creates a temp directory with the given contents.
    *
    * @param entries {object[]}

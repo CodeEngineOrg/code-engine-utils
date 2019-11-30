@@ -2,7 +2,7 @@
 
 const { iterate, joinIterables } = require("../../");
 const { assert, expect } = require("chai");
-const { delay, createIterator } = require("../utils");
+const { delay, createIterator, iterateAll } = require("../utils");
 const sinon = require("sinon");
 
 // CI environments are slow, so use a larger time buffer
@@ -11,17 +11,17 @@ const TIME_BUFFER = process.env.CI ? 150 : 50;
 describe("joinIterables() function", () => {
 
   it("should return an empty iterator if called with no arguments", async () => {
-    let items = await joinIterables().all();
+    let items = await iterateAll(joinIterables());
     expect(items).to.be.an("array").with.lengthOf(0);
   });
 
   it("should return an empty iterator if called with an empty array", async () => {
-    let items = await joinIterables([]).all();
+    let items = await iterateAll(joinIterables([]));
     expect(items).to.be.an("array").with.lengthOf(0);
   });
 
   it("should return each letter if called with strings", async () => {
-    let items = await joinIterables("Hello", "World").all();
+    let items = await iterateAll(joinIterables("Hello", "World"));
     expect(items).to.have.same.members(["H", "e", "l", "l", "o", "W", "o", "r", "l", "d"]);
   });
 
@@ -33,19 +33,19 @@ describe("joinIterables() function", () => {
       iterate(undefined),
     ];
 
-    let items = await joinIterables(...sources).all();
+    let items = await iterateAll(joinIterables(...sources));
     expect(items).to.be.an("array").with.lengthOf(0);
   });
 
   it("should iterate falsy values", async () => {
-    let items = await joinIterables([undefined, null, NaN, 0, false, ""]).all();
+    let items = await iterateAll(joinIterables([undefined, null, NaN, 0, false, ""]));
     expect(items).to.deep.equal([undefined, null, NaN, 0, false, ""]);
   });
 
   it("should iterate iterables of truthy values", async () => {
-    let items = await joinIterables([
+    let items = await iterateAll(joinIterables([
       1, true, "hello", /^regex$/, { a: "b" }, new Date("2005-05-05T05:05:05.005Z")
-    ]).all();
+    ]));
 
     expect(items).to.deep.equal([
       1, true, "hello", /^regex$/, { a: "b" }, new Date("2005-05-05T05:05:05.005Z"),
@@ -61,7 +61,7 @@ describe("joinIterables() function", () => {
     let iterable = [1, 2, 3][Symbol.iterator]();
     function* generator () { yield 1; yield 2; yield 3; }
 
-    let items = await joinIterables(string, array, set, map, object, iterable, generator()).all();
+    let items = await iterateAll(joinIterables(string, array, set, map, object, iterable, generator()));
 
     expect(items).to.be.an("array").with.lengthOf(21);
     expect(items).to.have.same.deep.members([
@@ -83,7 +83,7 @@ describe("joinIterables() function", () => {
       { value: 4 },
     ]);
 
-    let items = await joinIterables(source).all();
+    let items = await iterateAll(joinIterables(source));
 
     expect(items).to.be.an("array").with.lengthOf(4);
     expect(items).to.deep.equal([1, 2, 3, 4]);
@@ -113,7 +113,7 @@ describe("joinIterables() function", () => {
       { value: "baz" },
     ]);
 
-    let items = await joinIterables(source1, source2, source3, source4).all();
+    let items = await iterateAll(joinIterables(source1, source2, source3, source4));
 
     expect(items).to.be.an("array").with.lengthOf(14);
     expect(items).to.deep.equal([
@@ -356,7 +356,7 @@ describe("joinIterables() function", () => {
     };
 
     try {
-      await joinIterables(badIterator).all();
+      await iterateAll(joinIterables(badIterator));
       assert.fail("An error should have been thrown.");
     }
     catch (error) {
@@ -399,7 +399,7 @@ describe("joinIterables() function", () => {
     let iterable = await joinIterables(source1, source2());
 
     try {
-      await iterable.all();
+      await iterateAll(iterable);
       assert.fail("An error should have been thrown.");
     }
     catch (error) {
@@ -422,7 +422,7 @@ describe("joinIterables() function", () => {
     let iterable = await joinIterables(source1, source2());
 
     try {
-      await iterable.all();
+      await iterateAll(iterable);
       assert.fail("An error should have been thrown.");
     }
     catch (error) {

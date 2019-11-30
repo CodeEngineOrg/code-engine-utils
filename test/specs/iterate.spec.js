@@ -2,7 +2,7 @@
 
 const { iterate } = require("../../");
 const { assert, expect } = require("chai");
-const { delay } = require("../utils");
+const { delay, iterateAll } = require("../utils");
 
 // CI environments are slow, so use a larger time buffer
 const TIME_BUFFER = process.env.CI ? 150 : 50;
@@ -10,17 +10,17 @@ const TIME_BUFFER = process.env.CI ? 150 : 50;
 describe("iterate() function", () => {
 
   it("should return an empty iterator if called with no args", async () => {
-    let items = await iterate().all();
+    let items = await iterateAll(iterate());
     expect(items).to.be.an("array").with.lengthOf(0);
   });
 
   it("should return an empty iterator if called with undefined", async () => {
-    let items = await iterate(undefined).all();
+    let items = await iterateAll(iterate(undefined));
     expect(items).to.be.an("array").with.lengthOf(0);
   });
 
   it("should return an empty iterator if called with a void Promise", async () => {
-    let items = await iterate(Promise.resolve()).all();
+    let items = await iterateAll(iterate(Promise.resolve()));
     expect(items).to.be.an("array").with.lengthOf(0);
   });
 
@@ -30,7 +30,7 @@ describe("iterate() function", () => {
     expect(iterable1).to.equal(iterable2);
   });
 
-  it("should NOT return the same instance if called with a different async iterable", async () => {
+  it("should return the same instance if it's already an async iterable", async () => {
     async function* generator () {
       yield 1;
     }
@@ -38,126 +38,126 @@ describe("iterate() function", () => {
     let iterable1 = generator();
     let iterable2 = await iterate(iterable1);
 
-    expect(iterable1).not.to.equal(iterable2);
+    expect(iterable1).to.equal(iterable2);
   });
 
   it("should iterate a single falsy primitive", async () => {
-    let items = await iterate(null).all();
+    let items = await iterateAll(iterate(null));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([null]);
 
-    items = await iterate(Promise.resolve(null)).all();
+    items = await iterateAll(iterate(Promise.resolve(null)));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([null]);
 
-    items = await iterate(false).all();
+    items = await iterateAll(iterate(false));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([false]);
 
-    items = await iterate(Promise.resolve(false)).all();
+    items = await iterateAll(iterate(Promise.resolve(false)));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([false]);
 
-    items = await iterate(0).all();
+    items = await iterateAll(iterate(0));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([0]);
 
-    items = await iterate(Promise.resolve(0)).all();
+    items = await iterateAll(iterate(Promise.resolve(0)));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([0]);
 
-    items = await iterate("").all();
+    items = await iterateAll(iterate(""));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([""]);
 
-    items = await iterate(Promise.resolve("")).all();
+    items = await iterateAll(iterate(Promise.resolve("")));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([""]);
   });
 
   it("should iterate a single truthy primitive", async () => {
-    let items = await iterate("a").all();
+    let items = await iterateAll(iterate("a"));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal(["a"]);
 
-    items = await iterate(Promise.resolve("b")).all();
+    items = await iterateAll(iterate(Promise.resolve("b")));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal(["b"]);
 
-    items = await iterate(true).all();
+    items = await iterateAll(iterate(true));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([true]);
 
-    items = await iterate(Promise.resolve(true)).all();
+    items = await iterateAll(iterate(Promise.resolve(true)));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([true]);
 
-    items = await iterate(42).all();
+    items = await iterateAll(iterate(42));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([42]);
 
-    items = await iterate(Promise.resolve(-42)).all();
+    items = await iterateAll(iterate(Promise.resolve(-42)));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([-42]);
   });
 
   it("should iterate a single object", async () => {
-    let items = await iterate({}).all();
+    let items = await iterateAll(iterate({}));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([{}]);
 
-    items = await iterate(Promise.resolve({ foo: "bar" })).all();
+    items = await iterateAll(iterate(Promise.resolve({ foo: "bar" })));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([{ foo: "bar" }]);
 
-    items = await iterate(new Date("2005-05-05T05:05:05.005Z")).all();
+    items = await iterateAll(iterate(new Date("2005-05-05T05:05:05.005Z")));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([new Date("2005-05-05T05:05:05.005Z")]);
 
-    items = await iterate(Promise.resolve(/^regex$/)).all();
+    items = await iterateAll(iterate(Promise.resolve(/^regex$/)));
     expect(items).to.be.an("array").with.lengthOf(1);
     expect(items).to.deep.equal([/^regex$/]);
   });
 
   it("should iterate a string", async () => {
-    let items = await iterate("hello").all();
+    let items = await iterateAll(iterate("hello"));
     expect(items).to.be.an("array").with.lengthOf(5);
     expect(items).to.deep.equal(["h", "e", "l", "l", "o"]);
 
-    items = await iterate(Promise.resolve("world")).all();
+    items = await iterateAll(iterate(Promise.resolve("world")));
     expect(items).to.be.an("array").with.lengthOf(5);
     expect(items).to.deep.equal(["w", "o", "r", "l", "d"]);
   });
 
   it("should iterate an array", async () => {
-    let items = await iterate(["hello", "world"]).all();
+    let items = await iterateAll(iterate(["hello", "world"]));
     expect(items).to.be.an("array").with.lengthOf(2);
     expect(items).to.deep.equal(["hello", "world"]);
 
-    items = await iterate(Promise.resolve([1, 2, 3])).all();
+    items = await iterateAll(iterate(Promise.resolve([1, 2, 3])));
     expect(items).to.be.an("array").with.lengthOf(3);
     expect(items).to.deep.equal([1, 2, 3]);
 
-    items = await iterate(Promise.resolve([{ name: "Fred" }, { name: "Barney" }])).all();
+    items = await iterateAll(iterate(Promise.resolve([{ name: "Fred" }, { name: "Barney" }])));
     expect(items).to.be.an("array").with.lengthOf(2);
     expect(items).to.deep.equal([{ name: "Fred" }, { name: "Barney" }]);
   });
 
   it("should iterate an array of Promises", async () => {
-    let items = await iterate([Promise.resolve("hello"), Promise.resolve("world")]).all();
+    let items = await iterateAll(iterate([Promise.resolve("hello"), Promise.resolve("world")]));
     expect(items).to.be.an("array").with.lengthOf(2);
     expect(items[0]).to.be.a("Promise");
     expect(items[1]).to.be.a("Promise");
     expect(await Promise.all(items)).to.deep.equal(["hello", "world"]);
 
-    items = await iterate(Promise.resolve([Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)])).all();
+    items = await iterateAll(iterate(Promise.resolve([Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)])));
     expect(items).to.be.an("array").with.lengthOf(3);
     expect(items[0]).to.be.a("Promise");
     expect(items[1]).to.be.a("Promise");
     expect(items[2]).to.be.a("Promise");
     expect(await Promise.all(items)).to.deep.equal([1, 2, 3]);
 
-    items = await iterate([Promise.resolve({ name: "Fred" }), Promise.resolve({ name: "Barney" })]).all();
+    items = await iterateAll(iterate([Promise.resolve({ name: "Fred" }), Promise.resolve({ name: "Barney" })]));
     expect(items).to.be.an("array").with.lengthOf(2);
     expect(items[0]).to.be.a("Promise");
     expect(items[1]).to.be.a("Promise");
@@ -170,7 +170,7 @@ describe("iterate() function", () => {
       yield "world";
     }
 
-    let items = await iterate(helloWorld()).all();
+    let items = await iterateAll(iterate(helloWorld()));
     expect(items).to.be.an("array").with.lengthOf(2);
     expect(items).to.deep.equal(["hello", "world"]);
   });
@@ -182,7 +182,7 @@ describe("iterate() function", () => {
       yield Promise.resolve(3);
     }
 
-    let items = await iterate(counter()).all();
+    let items = await iterateAll(iterate(counter()));
     expect(items).to.be.an("array").with.lengthOf(3);
     expect(items[0]).to.be.a("Promise");
     expect(items[1]).to.be.a("Promise");
@@ -196,7 +196,7 @@ describe("iterate() function", () => {
       yield { firstName: "Barney", lastName: "Rubble" };
     }
 
-    let items = await iterate(getPeople()).all();
+    let items = await iterateAll(iterate(getPeople()));
     expect(items).to.be.an("array").with.lengthOf(2);
     expect(items).to.deep.equal([
       { firstName: "Fred", lastName: "Flintstone" },
@@ -211,7 +211,7 @@ describe("iterate() function", () => {
       yield Promise.resolve(["hello", "world"]);
     }
 
-    let items = await iterate(getObjects()).all();
+    let items = await iterateAll(iterate(getObjects()));
     expect(items).to.be.an("array").with.lengthOf(3);
     expect(items).to.deep.equal([
       new Date("2005-05-05T05:05:05.005Z"),
@@ -231,7 +231,7 @@ describe("iterate() function", () => {
       }
     };
 
-    let items = await iterate(iterator).all();
+    let items = await iterateAll(iterate(iterator));
     expect(items).to.be.an("array").with.lengthOf(5);
     expect(items).to.deep.equal([1, 2, 3, 4, 5]);
   });
@@ -257,7 +257,7 @@ describe("iterate() function", () => {
       }
     };
 
-    let items = await iterate(iterator).all();
+    let items = await iterateAll(iterate(iterator));
     expect(items).to.be.an("array").with.lengthOf(6);
     expect(items[0]).to.be.a("Promise");
     expect(items[1]).to.be.a("Promise");
@@ -343,7 +343,7 @@ describe("iterate() function", () => {
     };
 
     try {
-      await iterate(iterator).all();
+      await iterateAll(iterate(iterator));
       assert.fail("An error should have been thrown");
     }
     catch (error) {

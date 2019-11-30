@@ -2,7 +2,7 @@
 
 const { IterableWriter } = require("../../");
 const { assert, expect } = require("chai");
-const { delay } = require("../utils");
+const { delay, iterateAll } = require("../utils");
 const sinon = require("sinon");
 
 // CI environments are slow, so use a larger time buffer
@@ -12,7 +12,7 @@ describe("IterableWriter class", () => {
 
   function delayedRead (writer, _delay = 200) {
     return new Promise((resolve) => {
-      setTimeout(() => resolve(writer.iterable.all()), _delay);
+      setTimeout(() => resolve(iterateAll(writer.iterable)), _delay);
     });
   }
 
@@ -36,7 +36,7 @@ describe("IterableWriter class", () => {
   it("should iterate an empty set", async () => {
     let writer = new IterableWriter();
     writer.onRead = sinon.spy();
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
     await writer.end();
 
     expect(await items).to.deep.equal([]);
@@ -56,7 +56,7 @@ describe("IterableWriter class", () => {
   it("should iterate a single item", async () => {
     let writer = new IterableWriter();
     writer.onRead = sinon.spy();
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     await writer.write("Hello, world");
     await writer.end();
@@ -92,7 +92,7 @@ describe("IterableWriter class", () => {
 
     let writer = new IterableWriter();
     writer.onRead = onRead;
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     expect(await items).to.deep.equal(["Hello, world"]);
   });
@@ -100,7 +100,7 @@ describe("IterableWriter class", () => {
   it("should iterate multiple items", async () => {
     let writer = new IterableWriter();
     writer.onRead = sinon.spy();
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     await writer.write("Fred");
     await writer.write("Wilma");
@@ -142,7 +142,7 @@ describe("IterableWriter class", () => {
 
     let writer = new IterableWriter();
     writer.onRead = onRead;
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     expect(await items).to.deep.equal(["Fred", "Wilma", "Barney", "Betty"]);
   });
@@ -206,7 +206,7 @@ describe("IterableWriter class", () => {
 
   it("should return done if read again after finished", async () => {
     let writer = new IterableWriter();
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     await writer.write("Fred");
     await writer.write("Wilma");
@@ -222,7 +222,7 @@ describe("IterableWriter class", () => {
   it("should NOT call the onRead event handler if read again after finished", async () => {
     let writer = new IterableWriter();
     writer.onRead = sinon.spy();
-    writer.iterable.all();
+    iterateAll(writer.iterable);
 
     await writer.write("Fred");
     await writer.write("Wilma");
@@ -241,7 +241,7 @@ describe("IterableWriter class", () => {
 
   it("should not resolve promises (promise values should be resolved before calling write())", async () => {
     let writer = new IterableWriter();
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     let helloPromise = Promise.resolve("Hello, world");
     await writer.write(helloPromise);
@@ -297,7 +297,7 @@ describe("IterableWriter class", () => {
 
   it("should ignore multiple calls to end()", async () => {
     let writer = new IterableWriter();
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     await writer.write("Fred");
     await writer.write("Wilma");
@@ -314,7 +314,7 @@ describe("IterableWriter class", () => {
 
   it("should not allow values to be written after end()", async () => {
     let writer = new IterableWriter();
-    let items = writer.iterable.all();
+    let items = iterateAll(writer.iterable);
 
     await writer.write("Fred");
     await writer.write("Wilma");
