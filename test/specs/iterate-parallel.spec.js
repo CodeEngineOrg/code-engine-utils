@@ -5,7 +5,7 @@ const { assert, expect } = require("chai");
 const { delay } = require("../utils");
 
 // CI environments are slow, so use a larger buffer
-const TIME_BUFFER = process.env.CI ? 100 : 30;
+const TIME_BUFFER = process.env.CI ? 150 : 50;
 
 describe("iterateParallel() function", () => {
 
