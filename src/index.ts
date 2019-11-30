@@ -6,7 +6,6 @@ export { drainIterable } from "./drain-iterable";
 export { importModule, ModuleExports, resolveModule } from "./import-module";
 export { IterableWriter } from "./iterable-writer";
 export { iterate } from "./iterate";
-export { iterateAll } from "./iterate-all";
 export { iterateParallel } from "./iterate-parallel";
 export { joinIterables } from "./join-iterables";
 export { log } from "./log";

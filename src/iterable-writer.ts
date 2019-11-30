@@ -1,6 +1,4 @@
-import { AsyncAllIterableIterator } from "@code-engine/types";
 import { ono } from "ono";
-import { iterateAll } from "./iterate-all";
 import { pending, Pending } from "./pending";
 
 /**
@@ -25,7 +23,7 @@ export class IterableWriter<T> {
   /**
    * An iterable that iterates through the written values.
    */
-  public readonly iterable: AsyncAllIterableIterator<T>;
+  public readonly iterable: AsyncIterableIterator<T>;
 
   /**
    * An optional event handler that is called whenever the consumer tries to read a value but none
@@ -49,7 +47,6 @@ export class IterableWriter<T> {
       [Symbol.asyncIterator]() {
         return this;
       },
-      all: iterateAll,
       next: () => this._read(),
     };
   }

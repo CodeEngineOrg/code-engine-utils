@@ -1,4 +1,3 @@
-import { AsyncAllIterable } from "@code-engine/types";
 import { validate } from "@code-engine/validate";
 import { demandIterator } from "./get-iterator";
 import { IterableWriter } from "./iterable-writer";
@@ -7,7 +6,7 @@ import { IterableWriter } from "./iterable-writer";
  * Iterates over an iterable, always reading the specified number of values at a time.
  * Values are yielded in first-available order.
  */
-export function iterateParallel<T>(iterable: AsyncIterable<T>, concurrency: number): AsyncAllIterable<T> {
+export function iterateParallel<T>(iterable: AsyncIterable<T>, concurrency: number): AsyncIterable<T> {
   let iterator = demandIterator(iterable);
   concurrency = validate.number.integer.positive(concurrency, "concurrency");
   let pendingReads = 0;

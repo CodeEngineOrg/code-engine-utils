@@ -1,5 +1,4 @@
 // tslint:disable: no-floating-promises
-import { AsyncAllIterable } from "@code-engine/types";
 import { demandIterator } from "./get-iterator";
 import { IterableWriter } from "./iterable-writer";
 
@@ -16,7 +15,7 @@ interface Source<T> {
 /**
  * Joins multiple iterables into a single one that yields values in first-available order.
  */
-export function joinIterables<T>(...iterables: Array<AsyncIterable<T>>): AsyncAllIterable<T> {
+export function joinIterables<T>(...iterables: Array<AsyncIterable<T>>): AsyncIterable<T> {
   let sources = iterables.map((iterable) => ({
     iterator: demandIterator(iterable),
     pendingReads: 0,

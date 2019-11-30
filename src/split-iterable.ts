@@ -1,15 +1,13 @@
 import { stringify } from "@code-engine/stringify";
-import { AsyncAllIterable } from "@code-engine/types";
 import { validate } from "@code-engine/validate";
 import { ono } from "ono";
-import { iterateAll } from "./iterate-all";
 
 /**
  * Splits an iterable into separate ones that each iterate a subset of the values. Each value in the
  * original iterable will only be sent to ONE of the separate iterables. Values are sent in a first-come,
  * first-serve order, so some iterables may receive more values than others.
  */
-export function splitIterable<T>(source: AsyncIterable<T>, concurrency: number): Array<AsyncAllIterable<T>> {
+export function splitIterable<T>(source: AsyncIterable<T>, concurrency: number): Array<AsyncIterable<T>> {
   if (!source || typeof source[Symbol.asyncIterator] !== "function") {
     let value = stringify(source, { capitalize: true, article: true });
     throw ono.type(`${value} is not an async iterator.`);
@@ -22,12 +20,10 @@ export function splitIterable<T>(source: AsyncIterable<T>, concurrency: number):
 }
 
 
-function createIterable<T>(iterator: AsyncIterator<T>): AsyncAllIterable<T> {
+function createIterable<T>(iterator: AsyncIterator<T>): AsyncIterable<T> {
   return {
     [Symbol.asyncIterator]() {
       return iterator;
     },
-
-    all: iterateAll,
   };
 }

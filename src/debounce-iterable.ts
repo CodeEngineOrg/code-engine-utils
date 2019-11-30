@@ -1,11 +1,10 @@
-import { AsyncAllIterableIterator } from "@code-engine/types";
 import { demandIterator } from "./get-iterator";
 import { IterableWriter } from "./iterable-writer";
 
 /**
  * Debounces an async iterable, so all values that are yielded within a threshold are grouped together.
  */
-export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): AsyncAllIterableIterator<T[]> {
+export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): AsyncIterableIterator<T[]> {
   let iterator = demandIterator(iterable);
   let values: T[] = [];
   let timeout: NodeJS.Timeout | undefined;

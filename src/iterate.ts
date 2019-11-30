@@ -1,23 +1,19 @@
-import { AsyncAllIterable, ZeroOrMore } from "@code-engine/types";
+import { ZeroOrMore } from "@code-engine/types";
 import { getIterator } from "./get-iterator";
-import { iterateAll } from "./iterate-all";
 
 
 /**
  * Iterates over any value or list of values.
  */
-export function iterate<T>(values: ZeroOrMore<T> | Promise<ZeroOrMore<T>>): AsyncAllIterable<T> {
-  let asyncIterable = values as AsyncAllIterable<T>;
+export function iterate<T>(values: ZeroOrMore<T> | Promise<ZeroOrMore<T>>): AsyncIterable<T> {
+  let asyncIterable = values as AsyncIterable<T>;
 
-  if (asyncIterable
-  && asyncIterable.all === iterateAll
-  && typeof asyncIterable[Symbol.asyncIterator] === "function") {
-    // The value is already an AsyncAllIterable, so return it as-is.
+  if (asyncIterable && typeof asyncIterable[Symbol.asyncIterator] === "function") {
+    // The value is already an AsyncIterable, so return it as-is.
     return asyncIterable;
   }
 
   return {
-    all: iterateAll,
     [Symbol.asyncIterator]() {
       return asyncIterator(values);
     }
