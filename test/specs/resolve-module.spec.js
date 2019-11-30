@@ -13,18 +13,28 @@ describe("resolveModule() function", () => {
     ]);
 
     const ORIGINAL_CWD = process.cwd();
-    console.log("ORIGINAL CWD:", ORIGINAL_CWD);
 
     try {
       process.chdir(dir);
-      console.log("NEW CWD:", process.cwd());
       let path = await resolveModule("foo-bar");
+
+      const { realpathSync } = require("fs");
+      console.log(`
+=================================================================
+DIR:  ${dir}
+REAL: ${realpathSync(dir)}
+
+CWD:  ${process.cwd()}
+REAL: ${realpathSync(process.cwd())}
+
+PATH: ${path}
+REAL: ${realpathSync(path)}
+=================================================================`);
 
       expect(path).to.equal(join(dir, "node_modules/foo-bar/index.js"));
     }
     finally {
       process.chdir(ORIGINAL_CWD);
-      console.log("RESTORED CWD:", process.cwd());
     }
   });
 
