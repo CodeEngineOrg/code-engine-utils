@@ -45,6 +45,8 @@ module.exports = {
     let dir = await new Promise((resolve, reject) =>
       tmp.dir({ prefix: "code-engine-", unsafeCleanup: true }, (e, p) => e ? reject(e) : resolve(p)));
 
+    dir = await fs.realpath(dir);
+
     for (let entry of entries) {
       entry = typeof entry === "string" ? { path: entry } : entry;
       let { type, path, contents } = entry;

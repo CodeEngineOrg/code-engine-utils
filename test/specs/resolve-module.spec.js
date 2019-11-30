@@ -18,19 +18,6 @@ describe("resolveModule() function", () => {
       process.chdir(dir);
       let path = await resolveModule("foo-bar");
 
-      const { realpathSync } = require("fs");
-      console.log(`
-=================================================================
-DIR:  ${dir}
-REAL: ${realpathSync(dir)}
-
-CWD:  ${process.cwd()}
-REAL: ${realpathSync(process.cwd())}
-
-PATH: ${path}
-REAL: ${realpathSync(path)}
-=================================================================`);
-
       expect(path).to.equal(join(dir, "node_modules/foo-bar/index.js"));
     }
     finally {
