@@ -4,25 +4,7 @@ const { importModule } = require("../../");
 const { assert, expect } = require("chai");
 const { createDir } = require("../utils");
 
-describe("joinIterables() function", () => {
-
-  it("should import from the current directory by default", async () => {
-    let dir = await createDir([
-      { path: "node_modules/foo-bar/index.js", contents: "module.exports = { foo: 'bar' };" },
-    ]);
-
-    const ORIGINAL_CWD = process.cwd();
-
-    try {
-      process.chdir(dir);
-      let exports = await importModule("foo-bar");
-
-      expect(exports).to.deep.equal({ foo: "bar" });
-    }
-    finally {
-      process.chdir(ORIGINAL_CWD);
-    }
-  });
+describe("importModule() function", () => {
 
   it("should import a CommonJS module", async () => {
     let dir = await createDir([
@@ -34,7 +16,7 @@ describe("joinIterables() function", () => {
     expect(exports).to.deep.equal({ foo: "bar" });
   });
 
-  it("should import an ESM module", async () => {
+  it("should import an ESM module that has been transpiled to CommonJS", async () => {
     let dir = await createDir([
       { path: "node_modules/foo-bar/index.js", contents: "exports.foo = 'bar';\n\nexports.default = 'foobar';" },
     ]);
@@ -74,8 +56,7 @@ describe("joinIterables() function", () => {
     }
     catch (error) {
       expect(error).to.be.an.instanceOf(Error);
-      expect(error.message).to.equal('Cannot find module "foo-bar" in the local path or as a globally-installed package.');
-      expect(error.workerId).to.equal(0);
+      expect(error.message).to.equal("Cannot find module: foo-bar");
       expect(error.moduleId).to.equal("foo-bar");
     }
   });

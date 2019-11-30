@@ -3,7 +3,7 @@ export { createChangedFile } from "./create-changed-file";
 export { createFile, NormalizedFileInfo, normalizeFileInfo } from "./create-file";
 export { debounceIterable } from "./debounce-iterable";
 export { drainIterable } from "./drain-iterable";
-export { importModule, ModuleExports } from "./import-module";
+export { importModule, ModuleExports, resolveModule } from "./import-module";
 export { IterableWriter } from "./iterable-writer";
 export { iterate } from "./iterate";
 export { iterateAll } from "./iterate-all";
