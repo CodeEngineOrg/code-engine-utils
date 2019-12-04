@@ -10,3 +10,4 @@ export { iterateParallel } from "./iterate-parallel";
 export { joinIterables } from "./join-iterables";
 export { log } from "./log";
 export { splitIterable } from "./split-iterable";
+export { typedOno } from "./typed-ono";
