@@ -38,7 +38,7 @@
   },
   "engineStrict": true,
   "devDependencies": {
-    "@code-engine/types": "0.0.5",
+    "@code-engine/types": "0.0.6",
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.14",
@@ -55,7 +55,7 @@
     "source-map-support": "^0.5.16",
     "tslint": "^5.20.1",
     "tslint-modular": "^1.4.1",
-    "typescript": "^3.7.2",
+    "typescript": "^3.7.3",
     "typescript-tslint-plugin": "^0.5.5",
     "version-bump-prompt": "^5.0.6"
   },
