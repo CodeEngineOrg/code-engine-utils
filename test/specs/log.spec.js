@@ -122,7 +122,7 @@ describe("log() function", () => {
       log();
     }
 
-    expect(noArgs).to.throw(Error);
+    expect(noArgs).to.throw(TypeError);
     expect(noArgs).to.throw("Invalid log level: undefined");
   });
 
@@ -133,7 +133,7 @@ describe("log() function", () => {
       log(logger);
     }
 
-    expect(noArgs).to.throw(Error);
+    expect(noArgs).to.throw(TypeError);
     expect(noArgs).to.throw("Invalid log level: undefined");
   });
 
@@ -144,7 +144,7 @@ describe("log() function", () => {
       log(logger, "hello, world");
     }
 
-    expect(noArgs).to.throw(Error);
+    expect(noArgs).to.throw(TypeError);
     expect(noArgs).to.throw("Invalid log level: hello, world");
   });
 

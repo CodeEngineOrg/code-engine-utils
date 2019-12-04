@@ -25,6 +25,6 @@ export function log(logger: Logger, level: LogLevel, message: string | ErrorLike
       break;
 
     default:
-      throw ono(`Invalid log level: ${level}`);
+      throw ono.type(`Invalid log level: ${level}`);
   }
 }
