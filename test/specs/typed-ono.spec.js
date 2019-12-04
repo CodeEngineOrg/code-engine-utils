@@ -106,6 +106,15 @@ describe("typedOno() function", () => {
     expect(error.counter).to.equal(123);
   });
 
+  it("should create an error with a message", () => {
+    let originalError = new RangeError("Oops");
+    let error = typedOno(originalError, "Something went wrong.");
+
+    expect(error).to.be.an.instanceOf(RangeError);
+    expect(error.message).to.equal("Something went wrong. \nOops");
+    expect(error).not.to.equal(originalError);
+  });
+
   it("should create an error with custom properties and a message", () => {
     let originalError = new RangeError("Oops");
     let error = typedOno(originalError, { foo: "bar", counter: 123 }, "Something went wrong.");
