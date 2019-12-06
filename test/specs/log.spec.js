@@ -4,11 +4,11 @@ const { log } = require("../../");
 const { expect } = require("chai");
 const sinon = require("sinon");
 
-describe("log() function", () => {
+describe.only("log() function", () => {
 
   function createLogger () {
     return {
-      log: sinon.spy(),
+      info: sinon.spy(),
       debug: sinon.spy(),
       warn: sinon.spy(),
       error: sinon.spy(),
@@ -19,8 +19,8 @@ describe("log() function", () => {
     let logger = createLogger();
     log(logger, "info");
 
-    sinon.assert.calledOnce(logger.log);
-    sinon.assert.calledWithExactly(logger.log, undefined, undefined);
+    sinon.assert.calledOnce(logger.info);
+    sinon.assert.calledWithExactly(logger.info, undefined, undefined);
 
     sinon.assert.notCalled(logger.debug);
     sinon.assert.notCalled(logger.warn);
@@ -31,34 +31,34 @@ describe("log() function", () => {
     let logger = createLogger();
     log(logger, "info", "hello, world");
 
-    sinon.assert.calledOnce(logger.log);
-    sinon.assert.calledWithExactly(logger.log, "hello, world", undefined);
+    sinon.assert.calledOnce(logger.info);
+    sinon.assert.calledWithExactly(logger.info, "hello, world", undefined);
 
     sinon.assert.notCalled(logger.debug);
     sinon.assert.notCalled(logger.warn);
     sinon.assert.notCalled(logger.error);
   });
 
-  it('should call the logger.log() method when level is "info"', () => {
+  it('should call the logger.info() method when level is "info"', () => {
     let logger = createLogger();
     log(logger, "info", "hello, world", { foo: "bar" });
 
-    sinon.assert.calledOnce(logger.log);
-    expect(logger.log.firstCall.args[0]).to.equal("hello, world");
-    expect(logger.log.firstCall.args[1]).to.deep.equal({ foo: "bar" });
+    sinon.assert.calledOnce(logger.info);
+    expect(logger.info.firstCall.args[0]).to.equal("hello, world");
+    expect(logger.info.firstCall.args[1]).to.deep.equal({ foo: "bar" });
 
     sinon.assert.notCalled(logger.debug);
     sinon.assert.notCalled(logger.warn);
     sinon.assert.notCalled(logger.error);
   });
 
-  it('should call the logger.log() method when level is "log"', () => {
+  it('should call the logger.info() method when level is "log"', () => {
     let logger = createLogger();
     log(logger, "log", "hello, world", { foo: "bar" });
 
-    sinon.assert.calledOnce(logger.log);
-    expect(logger.log.firstCall.args[0]).to.equal("hello, world");
-    expect(logger.log.firstCall.args[1]).to.deep.equal({ foo: "bar" });
+    sinon.assert.calledOnce(logger.info);
+    expect(logger.info.firstCall.args[0]).to.equal("hello, world");
+    expect(logger.info.firstCall.args[1]).to.deep.equal({ foo: "bar" });
 
     sinon.assert.notCalled(logger.debug);
     sinon.assert.notCalled(logger.warn);
@@ -73,7 +73,7 @@ describe("log() function", () => {
     expect(logger.debug.firstCall.args[0]).to.equal("hello, world");
     expect(logger.debug.firstCall.args[1]).to.deep.equal({ foo: "bar" });
 
-    sinon.assert.notCalled(logger.log);
+    sinon.assert.notCalled(logger.info);
     sinon.assert.notCalled(logger.warn);
     sinon.assert.notCalled(logger.error);
   });
@@ -86,7 +86,7 @@ describe("log() function", () => {
     expect(logger.warn.firstCall.args[0]).to.equal("hello, world");
     expect(logger.warn.firstCall.args[1]).to.deep.equal({ foo: "bar" });
 
-    sinon.assert.notCalled(logger.log);
+    sinon.assert.notCalled(logger.info);
     sinon.assert.notCalled(logger.debug);
     sinon.assert.notCalled(logger.error);
   });
@@ -99,7 +99,7 @@ describe("log() function", () => {
     expect(logger.warn.firstCall.args[0]).to.equal("hello, world");
     expect(logger.warn.firstCall.args[1]).to.deep.equal({ foo: "bar" });
 
-    sinon.assert.notCalled(logger.log);
+    sinon.assert.notCalled(logger.info);
     sinon.assert.notCalled(logger.debug);
     sinon.assert.notCalled(logger.error);
   });
@@ -112,7 +112,7 @@ describe("log() function", () => {
     expect(logger.error.firstCall.args[0]).to.equal("hello, world");
     expect(logger.error.firstCall.args[1]).to.deep.equal({ foo: "bar" });
 
-    sinon.assert.notCalled(logger.log);
+    sinon.assert.notCalled(logger.info);
     sinon.assert.notCalled(logger.debug);
     sinon.assert.notCalled(logger.warn);
   });
@@ -154,7 +154,7 @@ describe("log() function", () => {
     }
 
     expect(noLogger).to.throw(Error);
-    expect(noLogger).to.throw("Cannot read property 'log' of null");
+    expect(noLogger).to.throw("Cannot read property 'info' of null");
   });
 
   it("should throw an error if called with an invalid logger", () => {
@@ -163,7 +163,7 @@ describe("log() function", () => {
     }
 
     expect(invalidLogger).to.throw(Error);
-    expect(invalidLogger).to.throw("logger.log is not a function");
+    expect(invalidLogger).to.throw("logger.info is not a function");
   });
 
 });

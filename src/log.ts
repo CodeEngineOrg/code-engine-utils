@@ -8,7 +8,7 @@ export function log(logger: Logger, level: LogLevel, message: string | ErrorLike
   switch (level) {
     case "info":
     case "log" as LogLevel:
-      logger.log(message as string, data);
+      logger.info(message as string, data);
       break;
 
     case "warning":

@@ -38,7 +38,7 @@
   },
   "engineStrict": true,
   "devDependencies": {
-    "@code-engine/types": "0.0.6",
+    "@code-engine/types": "0.0.7",
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.14",
