@@ -4,7 +4,7 @@ const { log } = require("../../");
 const { expect } = require("chai");
 const sinon = require("sinon");
 
-describe.only("log() function", () => {
+describe("log() function", () => {
 
   function createLogger () {
     return {
