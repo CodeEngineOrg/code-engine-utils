@@ -1,5 +1,5 @@
 export { ConcurrentTasks } from "./concurrent-tasks";
-export { createChangedFile } from "./create-changed-file";
+export { createChangedFile, CreateChangedFileInfo } from "./create-changed-file";
 export { createFile, CreateFileInfo } from "./create-file";
 export { debounceIterable } from "./debounce-iterable";
 export { drainIterable } from "./drain-iterable";

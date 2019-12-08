@@ -8,19 +8,27 @@ const _private = Symbol("private");
 /**
  * Creats a CodeEngine `File` object.
  */
-export function createFile(info: File | FileInfo, pluginName?: string): File {
+export function createFile(info: File | CreateFileInfo): File {
   if (isFile(info)) {
     return info;
   }
 
   info = normalizeFileInfo(info);
-  let fileProps = createFileProps(info as NormalizedFileInfo, pluginName);
+  let fileProps = createFileProps(info as NormalizedFileInfo);
   return Object.create(filePrototype, fileProps) as File;
 }
 
 
 /**
+ * Extends the user-provided `FileInfo` object with additional metadata
+ * that's needed internally by CodeEngine.
  */
+export interface CreateFileInfo extends FileInfo {
+  /**
+   * The name of the CodeEngine plugin that created the file.
+   * This is used to generate a unique file source URL.
+   */
+  plugin?: string;
 }
 
 
@@ -94,10 +102,10 @@ const filePrototype = {
 /**
  * Creates the property descriptors for a `CodeEngineFile` instance.
  */
-function createFileProps(info: NormalizedFileInfo, pluginName?: string): PropertyDescriptorMap {
+function createFileProps(info: NormalizedFileInfo): PropertyDescriptorMap {
   let { dir, name, ext } = path.parse(info.path);
   let contents = info.contents || Buffer.alloc(0);
-  let source = info.source || createSourceURL(info.path, pluginName);
+  let source = info.source || createSourceURL(info.path, info.plugin);
   let sourceMap = info.sourceMap || undefined;
   let createdAt = info.createdAt || new Date();
   let modifiedAt = info.modifiedAt || new Date();
