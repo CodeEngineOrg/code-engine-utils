@@ -26,6 +26,18 @@ describe("createChangedFile() function", () => {
     expect(file.change).to.equal("modified");
   });
 
+  it("should use the plugin name for the source URL", () => {
+    let file = createChangedFile({
+      path: "file.txt",
+      change: "modified",
+      plugin: "My Cool Plugin",
+    });
+
+    expect(file).to.satisfy(isValidChangedFile);
+    expect(file.change).to.equal("modified");
+    expect(file.source).to.equal("code-engine://My-Cool-Plugin/file.txt");
+  });
+
   it("should set custom metadata", () => {
     let file = createChangedFile({
       path: "file.txt",

@@ -18,6 +18,16 @@ describe("createFile() function", () => {
     expect(file).to.satisfy(isValidFile);
   });
 
+  it("should use the plugin name for the source URL", () => {
+    let file = createFile({
+      path: "file.txt",
+      plugin: "My Cool Plugin",
+    });
+
+    expect(file).to.satisfy(isValidFile);
+    expect(file.source).to.equal("code-engine://My-Cool-Plugin/file.txt");
+  });
+
   it("should use custom dates", () => {
     let file = createFile({
       path: "file.txt",

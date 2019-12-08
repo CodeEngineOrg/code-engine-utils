@@ -120,7 +120,7 @@ describe("File path properties", () => {
   });
 
   it("should use the plugin name for the source URL", () => {
-    let file = createFile({ path: "path/to/my/file.html" }, "My Custom Plugin");
+    let file = createFile({ path: "path/to/my/file.html", plugin: "My Custom Plugin" });
 
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://My-Custom-Plugin/path/to/my/file.html");
@@ -131,7 +131,7 @@ describe("File path properties", () => {
   });
 
   it("should sanitize special characters in the plugin name and file path when setting the source", () => {
-    let file = createFile({ path: "Th!$/p@th/h,a,s/\"#special#` characters?" }, "$uper ++AWESOME++ Plugin-!");
+    let file = createFile({ path: "Th!$/p@th/h,a,s/\"#special#` characters?", plugin: "$uper ++AWESOME++ Plugin-!" });
 
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://uper-AWESOME-Plugin/Th!%24/p%40th/h%2Ca%2Cs/%22%23special%23%60%20characters%3F");
