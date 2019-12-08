@@ -27,11 +27,13 @@ describe("createChangedFile() function", () => {
   });
 
   it("should use the plugin name for the source URL", () => {
-    let file = createChangedFile({
-      path: "file.txt",
-      change: "modified",
-      plugin: "My Cool Plugin",
-    });
+    let file = createChangedFile(
+      {
+        path: "file.txt",
+        change: "modified",
+      },
+      "My Cool Plugin"
+    );
 
     expect(file).to.satisfy(isValidChangedFile);
     expect(file.change).to.equal("modified");

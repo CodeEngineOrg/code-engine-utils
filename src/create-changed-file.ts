@@ -2,7 +2,7 @@ import { stringify } from "@code-engine/stringify";
 import { ChangedFile, ChangedFileInfo, FileChange } from "@code-engine/types";
 import { validate } from "@code-engine/validate";
 import { ono } from "ono";
-import { createFile, CreateFileInfo } from "./create-file";
+import { createFile } from "./create-file";
 
 
 const fileChangeTypes = [FileChange.Created, FileChange.Modified, FileChange.Deleted];
@@ -11,22 +11,16 @@ const fileChangeTypes = [FileChange.Created, FileChange.Modified, FileChange.Del
 /**
  * Creats a CodeEngine `ChangedFile` object.
  */
-export function createChangedFile(info: ChangedFile | CreateChangedFileInfo): ChangedFile {
-  let file = createFile(info) as ChangedFile;
+export function createChangedFile(info: unknown, pluginName?: string): ChangedFile {
+  let file = createFile(info, pluginName) as ChangedFile;
+  let fileInfo = info as ChangedFileInfo;
 
-  if (!info.change) {
+  if (!fileInfo.change) {
     let list = stringify.values(fileChangeTypes, { conjunction: "or" });
     throw ono.type(`The type of file change must be specified (${list}).`);
   }
 
-  file.change = validate.value.oneOf(info.change, fileChangeTypes, "file change");
+  file.change = validate.value.oneOf(fileInfo.change, fileChangeTypes, "file change");
 
   return file;
 }
-
-
-/**
- * Extends the user-provided `ChangedFileInfo` object with additional metadata
- * that's needed internally by CodeEngine.
- */
-export type CreateChangedFileInfo = ChangedFileInfo & CreateFileInfo;

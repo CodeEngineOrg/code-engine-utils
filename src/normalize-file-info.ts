@@ -1,14 +1,13 @@
 import { stringify } from "@code-engine/stringify";
-import { AnyContents, FileMetadata, SourceMap } from "@code-engine/types";
+import { AnyContents, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
 import { ono } from "ono";
 import * as path from "path";
-import { CreateFileInfo } from "./create-file";
 
 /**
  * Normalizes a `FileInfo` object so each of its fields is a known type.
  */
-export function normalizeFileInfo(info: CreateFileInfo): NormalizedFileInfo {
-  if (!info || typeof info !== "object" || typeof info.path !== "string") {
+export function normalizeFileInfo(info: unknown): NormalizedFileInfo {
+  if (!isFileInfo(info)) {
     throw ono.type(`Invalid CodeEngine file: ${stringify(info)}. Expected an object with at least a "path" property.`);
   }
 
@@ -20,7 +19,6 @@ export function normalizeFileInfo(info: CreateFileInfo): NormalizedFileInfo {
     normalized.contents = toBuffer(info.contents || info.text);
   }
 
-  info.plugin && (normalized.plugin = String(info.plugin));
   info.source && (normalized.source = String(info.source));
   info.sourceMap && (normalized.sourceMap = info.sourceMap);
   info.createdAt && (normalized.createdAt = info.createdAt);
@@ -84,4 +82,12 @@ export function toBuffer(value?: AnyContents): Buffer {
   catch (error) {
     throw ono.type(error, `Invalid file contents: ${stringify(value)}`);
   }
+}
+
+
+/**
+ * Determines whether the given value is a `FileInfo` object.
+ */
+function isFileInfo(info: unknown): info is FileInfo {
+  return info && typeof info === "object" && typeof (info as FileInfo).path === "string";
 }

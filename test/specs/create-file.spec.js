@@ -19,11 +19,7 @@ describe("createFile() function", () => {
   });
 
   it("should use the plugin name for the source URL", () => {
-    let file = createFile({
-      path: "file.txt",
-      plugin: "My Cool Plugin",
-    });
-
+    let file = createFile({ path: "file.txt" }, "My Cool Plugin");
     expect(file).to.satisfy(isValidFile);
     expect(file.source).to.equal("code-engine://My-Cool-Plugin/file.txt");
   });

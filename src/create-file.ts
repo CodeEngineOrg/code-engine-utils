@@ -8,27 +8,14 @@ const _private = Symbol("private");
 /**
  * Creats a CodeEngine `File` object.
  */
-export function createFile(info: File | CreateFileInfo): File {
+export function createFile(info: unknown, pluginName?: string): File {
   if (isFile(info)) {
     return info;
   }
 
   info = normalizeFileInfo(info);
-  let fileProps = createFileProps(info as NormalizedFileInfo);
+  let fileProps = createFileProps(info as NormalizedFileInfo, pluginName);
   return Object.create(filePrototype, fileProps) as File;
-}
-
-
-/**
- * Extends the user-provided `FileInfo` object with additional metadata
- * that's needed internally by CodeEngine.
- */
-export interface CreateFileInfo extends FileInfo {
-  /**
-   * The name of the CodeEngine plugin that created the file.
-   * This is used to generate a unique file source URL.
-   */
-  plugin?: string;
 }
 
 
@@ -102,10 +89,10 @@ const filePrototype = {
 /**
  * Creates the property descriptors for a `CodeEngineFile` instance.
  */
-function createFileProps(info: NormalizedFileInfo): PropertyDescriptorMap {
+function createFileProps(info: NormalizedFileInfo, pluginName?: string): PropertyDescriptorMap {
   let { dir, name, ext } = path.parse(info.path);
   let contents = info.contents || Buffer.alloc(0);
-  let source = info.source || createSourceURL(info.path, info.plugin);
+  let source = info.source || createSourceURL(info.path, pluginName);
   let sourceMap = info.sourceMap || undefined;
   let createdAt = info.createdAt || new Date();
   let modifiedAt = info.modifiedAt || new Date();
@@ -151,14 +138,6 @@ function setContents(this: CodeEngineFile, value: Buffer) {
 }
 
 
-/**
- * Determines whether the given file is one of our internal `File` objects.
- */
-function isFile(file: unknown): file is File {
-  return file && Object.getPrototypeOf(file) === filePrototype;
-}
-
-
 const illegalHostnameCharacters = /[^a-z0-9]+/ig;
 const windowsPathSeparators = /\\/g;
 
@@ -186,4 +165,12 @@ function createSourceURL(relativePath: string, pluginName?: string): string {
   relativePath = relativePath.split("/").map(encodeURIComponent).join("/");
 
   return `code-engine://${pluginName}/${relativePath}`;
+}
+
+
+/**
+ * Determines whether the given value is one of our internal `File` objects.
+ */
+function isFile(file: unknown): file is File {
+  return file && Object.getPrototypeOf(file) === filePrototype;
 }
