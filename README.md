@@ -1,6 +1,17 @@
 CodeEngine utilities
 ======================================
 
+[![Cross-Platform Compatibility](https://engine.codes/img/badges/os-badges.svg)](https://travis-ci.com/CodeEngineOrg/code-engine-utils)
+[![Build Status](https://api.travis-ci.com/CodeEngineOrg/code-engine-utils.svg?branch=master)](https://travis-ci.com/CodeEngineOrg/code-engine-utils)
+
+[![Coverage Status](https://coveralls.io/repos/github/CodeEngineOrg/code-engine-utils/badge.svg?branch=master)](https://coveralls.io/github/CodeEngineOrg/code-engine-utils)
+[![Dependencies](https://david-dm.org/CodeEngineOrg/code-engine-utils.svg)](https://david-dm.org/CodeEngineOrg/code-engine-utils)
+
+[![npm](https://img.shields.io/npm/v/@code-engine/utils.svg)](https://www.npmjs.com/package/@code-engine/utils)
+[![License](https://img.shields.io/npm/l/@code-engine/utils.svg)](LICENSE)
+
+
+
 This is a utility library that's used inside [CodeEngine](https://engine.codes/). It contains miscellaneous utility functions, some of which are experimental and may be removed or changed in the future.
 
 > **NOTE:** This is an **internal library** that is only intended to be used by CodeEngine. Using it outside of CodeEngine is discouraged.
