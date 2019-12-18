@@ -29,9 +29,9 @@ File utilities
 -------------------------------
 
 ### `createFile(info, [pluginName])`
-Creates a [CodeEngine `File` object](https://github.com/CodeEngineOrg/code-engine-types#types).
+Creates a [CodeEngine `File` object](https://github.com/CodeEngineOrg/code-engine/wiki/Files).
 
-- **info:** - A [`FileInfo` object](https://github.com/CodeEngineOrg/code-engine-types#types). All fields are optional except for the `path`.
+- **info:** - A [`FileInfo` object](https://github.com/CodeEngineOrg/code-engine/wiki/Files#fileinfo-objects). All fields are optional except for the `path`.
 
 - **pluginName:** - (optional) The name of the plugin that's creating the file. This is used to create a unique `source` URL for the file. If not provided, it just defaults to "plugin".
 
@@ -56,7 +56,7 @@ createChangedFile({ path: "page.html", text: "<h1>Hello, world!</h1>", change: "
 
 
 ### `normalizeFileInfo(info)`
-Normalizes a [`FileInfo` object](https://github.com/CodeEngineOrg/code-engine-types#types). For ease of use, the `FileInfo` interface is pretty loose and allows multiple different data types for most fields. This function returns a normalized `FileInfo` object where each field is a specific type.
+Normalizes a [`FileInfo` object](https://github.com/CodeEngineOrg/code-engine/wiki/Files#fileinfo-objects). For ease of use, the `FileInfo` interface is pretty loose and allows multiple different data types for most fields. This function returns a normalized `FileInfo` object where each field is a specific type.
 
 This function is called internally by [`createFile()`](#createfileinfo-pluginname) and [`createChangedFile()`](#createchangedfileinfo-pluginname).
 
