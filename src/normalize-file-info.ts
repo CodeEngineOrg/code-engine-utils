@@ -34,7 +34,6 @@ export function normalizeFileInfo(info: unknown): NormalizedFileInfo {
  */
 export interface NormalizedFileInfo {
   path: string;
-  plugin?: string;
   source?: string;
   sourceMap?: SourceMap;
   createdAt?: Date;
