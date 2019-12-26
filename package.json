@@ -1,6 +1,6 @@
 {
   "name": "@code-engine/utils",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Internal CodeEngine utilities",
   "keywords": [
     "code-engine"
@@ -38,7 +38,7 @@
   },
   "engineStrict": true,
   "devDependencies": {
-    "@code-engine/types": "^0.0.9",
+    "@code-engine/types": "0.0.10",
     "@types/chai": "^4.2.7",
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.0",
