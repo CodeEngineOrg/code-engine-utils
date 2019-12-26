@@ -1,6 +1,7 @@
 export { ConcurrentTasks } from "./concurrent-tasks";
 export { createChangedFile } from "./create-changed-file";
 export { createFile } from "./create-file";
+export { createLogEmitter } from "./create-log-emitter";
 export { debounceIterable } from "./debounce-iterable";
 export { drainIterable } from "./drain-iterable";
 export { importModule, ModuleExports, resolveModule } from "./import-module";
