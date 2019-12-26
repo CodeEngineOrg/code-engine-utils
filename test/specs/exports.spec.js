@@ -4,8 +4,8 @@ const { expect } = require("chai");
 const commonJSExport = require("../../");
 const { default: defaultExport } = require("../../");
 const {
-  createFile, createChangedFile, normalizeFileInfo, log, typedOno, importModule, resolveModule, ConcurrentTasks,
-  iterate, iterateParallel, debounceIterable, drainIterable, joinIterables, splitIterable, IterableWriter
+  createFile, createChangedFile, normalizeFileInfo, log, createLogEmitter, typedOno, importModule, resolveModule,
+  ConcurrentTasks, iterate, iterateParallel, debounceIterable, drainIterable, joinIterables, splitIterable, IterableWriter
 } = require("../../");
 
 describe("@code-engine/utils package exports", () => {
@@ -32,6 +32,11 @@ describe("@code-engine/utils package exports", () => {
   it("should export the log function as a named export", () => {
     expect(log).to.be.a("function");
     expect(log.name).to.equal("log");
+  });
+
+  it("should export the createLogEmitter function as a named export", () => {
+    expect(createLogEmitter).to.be.a("function");
+    expect(createLogEmitter.name).to.equal("createLogEmitter");
   });
 
   it("should export the typedOno function as a named export", () => {
@@ -95,6 +100,7 @@ describe("@code-engine/utils package exports", () => {
       "createChangedFile",
       "normalizeFileInfo",
       "log",
+      "createLogEmitter",
       "typedOno",
       "importModule",
       "resolveModule",
