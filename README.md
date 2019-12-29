@@ -21,7 +21,7 @@ This is a utility library that's used inside [CodeEngine](https://engine.codes/)
 - [File utilities](#file-utilities)
 - [Module utilities](#module-utilities)
 - [Iteration utilities](#iteration-utilities)
-- [Miscellaneous utilities](#miscellaneous-utilities)
+- [Log utilities](#log-utilities)
 
 
 
@@ -276,7 +276,7 @@ await drainIterable(myAsyncIterable, 3);
 
 
 
-Miscellaneous utilities
+Log utilities
 -------------------------------
 
 
@@ -298,6 +298,26 @@ log(myLogger, "info", "This is an info message");
 log(myLogger, "warning", "This is a warning!", { code: "LOW_MEMORY" });
 log(myLogger, "error", new RangeError("Out of range!"));
 ```
+
+
+### `createLogEmitter(emitter, context)`
+Creates a [`Logger`](https://github.com/CodeEngineOrg/code-engine-types/blob/master/src/logger.d.ts) that emits log messages via the given [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter).
+
+- **emitter:** - The [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) to which logs are emitted
+
+- **context:** - A CodeEngine [`Context` object](https://github.com/CodeEngineOrg/code-engine-types/blob/master/src/context.d.ts) that will be included in all emitted events to provide information about the build
+
+```javascript
+import { createLogEmitter } from "@code-engine/utils";
+import { EventEmitter } from "events";
+
+let emitter = new EventEmitter();
+let log = createLogEmitter(emitter, context);
+
+log("This is a log message");
+log.warn("This is a warning message");
+```
+
 
 
 Contributing
