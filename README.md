@@ -300,25 +300,6 @@ log(myLogger, "error", new RangeError("Out of range!"));
 ```
 
 
-### `typedOno(error, [props], [message])`
-This is a wrapper around [ono](https://github.com/js-devtools/ono). It calls the ono method that corresponds to the type of error. For example, if `error` is a `RangeError`, then it will call `ono.range()`.
-
-- **error:** - The error to wrap
-
-- **props:** - (optional) A POJO with custom properties to add to the error
-
-- **message:** (optional) A custom message to prepend to the `error` message
-
-```javascript
-import { typedOno } from "@code-engine/utils";
-
-typedOno(new RangeError("Out of range!"));
-typedOno(new SyntaxError("Bad syntax"), { line: 5, col: 12 });
-typedOno(new TypeError("Incorrect type"), { expected: "number", actual: "string" }, "The value should be a number, not a string.");
-```
-
-
-
 Contributing
 --------------------------
 Contributions, enhancements, and bug-fixes are welcome!  [File an issue](https://github.com/CodeEngineOrg/code-engine-utils/issues) on GitHub and [submit a pull request](https://github.com/CodeEngineOrg/code-engine-utils/pulls).

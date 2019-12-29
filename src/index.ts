@@ -12,4 +12,3 @@ export { joinIterables } from "./join-iterables";
 export { log } from "./log";
 export { NormalizedFileInfo, normalizeFileInfo } from "./normalize-file-info";
 export { splitIterable } from "./split-iterable";
-export { typedOno } from "./typed-ono";
