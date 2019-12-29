@@ -2,13 +2,22 @@ import { Context, EventName, LogEventData, Logger, LogLevel } from "@code-engine
 import { validate } from "@code-engine/validate";
 import { EventEmitter } from "events";
 
+interface ContextWithOptionalLog extends Omit<Context, "log"> {
+  log?: Logger;
+}
+
+
 /**
  * Emits log messages via an EventEmitter.
  */
-export function createLogEmitter(emitter: EventEmitter, context: Context): Logger {
+export function createLogEmitter(emitter: EventEmitter, context: ContextWithOptionalLog): Logger {
   validate.value(emitter, "EventEmitter");
   validate.type.function(emitter.emit, "EventEmitter");
   validate.type.object(context, "CodeEngine context");
+
+  if (!context.log) {
+    context.log = log;
+  }
 
   function log(message: string | Error, data?: object): void {
     if (!message || typeof message === "string") {

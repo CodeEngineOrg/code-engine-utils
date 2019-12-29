@@ -21,6 +21,23 @@ describe("createLogEmitter() function", () => {
     return { emitter, context };
   }
 
+  it("sets the Context.log property to itself", () => {
+    let { emitter, context } = createMocks();
+    let log = createLogEmitter(emitter, context);
+    expect(context.log).to.equal(log);
+  });
+
+  it("doesn't override the Context.log property if already set", () => {
+    function myOwnLogger () {}
+
+    let { emitter, context } = createMocks();
+    context.log = myOwnLogger;
+    let log = createLogEmitter(emitter, context);
+
+    expect(context.log).not.to.equal(log);
+    expect(context.log).to.equal(myOwnLogger);
+  });
+
   it("can be called without any arguments", () => {
     let { emitter, context } = createMocks();
     let log = createLogEmitter(emitter, context);
