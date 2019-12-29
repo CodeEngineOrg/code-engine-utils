@@ -1,14 +1,14 @@
-import { EventName, LogEventData, Logger, LogLevel } from "@code-engine/types";
+import { Context, EventName, LogEventData, Logger, LogLevel } from "@code-engine/types";
 import { validate } from "@code-engine/validate";
 import { EventEmitter } from "events";
 
 /**
  * Emits log messages via an EventEmitter.
  */
-export function createLogEmitter(emitter: EventEmitter, debug: boolean): Logger {
+export function createLogEmitter(emitter: EventEmitter, context: Context): Logger {
   validate.value(emitter, "EventEmitter");
   validate.type.function(emitter.emit, "EventEmitter");
-  debug = Boolean(debug);
+  validate.type.object(context, "CodeEngine context");
 
   function log(message: string | Error, data?: object): void {
     if (!message || typeof message === "string") {
@@ -22,25 +22,25 @@ export function createLogEmitter(emitter: EventEmitter, debug: boolean): Logger 
   log.info = (message: string, data?: object | undefined) => {
     message = String(message || "");
     let logEventData: LogEventData = { ...data, message, level: LogLevel.Info };
-    emitter.emit(EventName.Log, logEventData);
+    emitter.emit(EventName.Log, logEventData, context);
   };
 
   log.debug = (message: string, data?: object | undefined) => {
-    if (debug) {
+    if (context.debug) {
       message = String(message || "");
       let logEventData: LogEventData = { ...data, message, level: LogLevel.Debug };
-      emitter.emit(EventName.Log, logEventData);
+      emitter.emit(EventName.Log, logEventData, context);
     }
   };
 
   log.warn = (warning: string | Error, data?: object | undefined) => {
-    let logEventData: LogEventData = { ...data, ...splitError(warning, debug), level: LogLevel.Warning };
-    emitter.emit(EventName.Log, logEventData);
+    let logEventData: LogEventData = { ...data, ...splitError(warning, context.debug), level: LogLevel.Warning };
+    emitter.emit(EventName.Log, logEventData, context);
   };
 
   log.error = (error: string | Error, data?: object | undefined) => {
-    let logEventData: LogEventData = { ...data, ...splitError(error, debug), level: LogLevel.Error };
-    emitter.emit(EventName.Log, logEventData);
+    let logEventData: LogEventData = { ...data, ...splitError(error, context.debug), level: LogLevel.Error };
+    emitter.emit(EventName.Log, logEventData, context);
   };
 
   return log;
