@@ -21,18 +21,12 @@ describe("createLogEmitter() function", () => {
     return { emitter, context };
   }
 
-  it("sets the Context.log property to itself", () => {
-    let { emitter, context } = createMocks();
-    let log = createLogEmitter(emitter, context);
-    expect(context.log).to.equal(log);
-  });
-
   it("doesn't override the Context.log property if already set", () => {
     function myOwnLogger () {}
 
     let { emitter, context } = createMocks();
     context.log = myOwnLogger;
-    let log = createLogEmitter(emitter, context);
+    let log = createLogEmitter(emitter, context.debug);
 
     expect(context.log).not.to.equal(log);
     expect(context.log).to.equal(myOwnLogger);
@@ -40,7 +34,7 @@ describe("createLogEmitter() function", () => {
 
   it("can be called without any arguments", () => {
     let { emitter, context } = createMocks();
-    let log = createLogEmitter(emitter, context);
+    let log = createLogEmitter(emitter, context.debug);
     log();
 
     sinon.assert.calledOnce(emitter.emit);
@@ -49,14 +43,13 @@ describe("createLogEmitter() function", () => {
       sinon.match({
         level: "info",
         message: "",
-      }),
-      context
+      })
     );
   });
 
   it("can be called with only a message", () => {
     let { emitter, context } = createMocks();
-    let log = createLogEmitter(emitter, context);
+    let log = createLogEmitter(emitter, context.debug);
     log("hello, world");
 
     sinon.assert.calledOnce(emitter.emit);
@@ -65,14 +58,13 @@ describe("createLogEmitter() function", () => {
       sinon.match({
         level: "info",
         message: "hello, world",
-      }),
-      context
+      })
     );
   });
 
   it("can be called with a message and data", () => {
     let { emitter, context } = createMocks();
-    let log = createLogEmitter(emitter, context);
+    let log = createLogEmitter(emitter, context.debug);
     log("hello, world", { foo: "bar", answer: 42, now: /^regex$/ });
 
     sinon.assert.calledOnce(emitter.emit);
@@ -84,14 +76,13 @@ describe("createLogEmitter() function", () => {
         foo: "bar",
         answer: 42,
         now: /^regex$/
-      }),
-      context
+      })
     );
   });
 
   it("can be called with an error", () => {
     let { emitter, context } = createMocks();
-    let log = createLogEmitter(emitter, context);
+    let log = createLogEmitter(emitter, context.debug);
     log(new RangeError("Boom!"));
 
     sinon.assert.calledOnce(emitter.emit);
@@ -104,14 +95,13 @@ describe("createLogEmitter() function", () => {
           name: "RangeError",
           message: "Boom!",
         }
-      }),
-      context
+      })
     );
   });
 
   it("can be called with an error and data", () => {
     let { emitter, context } = createMocks();
-    let log = createLogEmitter(emitter, context);
+    let log = createLogEmitter(emitter, context.debug);
     log(new RangeError("Boom!"), { foo: "bar", answer: 42, now: /^regex$/ });
 
     sinon.assert.calledOnce(emitter.emit);
@@ -127,8 +117,7 @@ describe("createLogEmitter() function", () => {
         foo: "bar",
         answer: 42,
         now: /^regex$/
-      }),
-      context
+      })
     );
   });
 
@@ -150,30 +139,10 @@ describe("createLogEmitter() function", () => {
     expect(invalidEmitter).to.throw("Invalid EventEmitter: true. Expected a function.");
   });
 
-  it("should throw an error if called without a context object", () => {
-    function noContext () {
-      let { emitter } = createMocks();
-      createLogEmitter(emitter);
-    }
-
-    expect(noContext).to.throw(TypeError);
-    expect(noContext).to.throw("Invalid CodeEngine context: undefined. A value is required.");
-  });
-
-  it("should throw an error if called with an invalid context object", () => {
-    function invalidContext () {
-      let { emitter } = createMocks();
-      createLogEmitter(emitter, true);
-    }
-
-    expect(invalidContext).to.throw(TypeError);
-    expect(invalidContext).to.throw("Invalid CodeEngine context: true. Expected an object.");
-  });
-
   describe("info", () => {
     it("can be called without any arguments", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.info();
 
       sinon.assert.calledOnce(emitter.emit);
@@ -182,14 +151,13 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "info",
           message: "",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with only a message", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.info("hello, world");
 
       sinon.assert.calledOnce(emitter.emit);
@@ -198,14 +166,13 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "info",
           message: "hello, world",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a message and data", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.info("hello, world", { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -217,14 +184,13 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a non-string message", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.info({ foo: "bar" });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -233,14 +199,13 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "info",
           message: "[object Object]",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a non-string message and data", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.info(new RangeError("Boom!"), { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -252,8 +217,7 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
   });
@@ -261,7 +225,7 @@ describe("createLogEmitter() function", () => {
   describe("debug", () => {
     it("does nothing if not in debug mode", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.debug("this message won't get logged");
 
       sinon.assert.notCalled(emitter.emit);
@@ -270,7 +234,7 @@ describe("createLogEmitter() function", () => {
     it("can be called without any arguments", () => {
       let { emitter, context } = createMocks();
       context.debug = true;
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.debug();
 
       sinon.assert.calledOnce(emitter.emit);
@@ -279,15 +243,14 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "debug",
           message: "",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with only a message", () => {
       let { emitter, context } = createMocks();
       context.debug = true;
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.debug("hello, world");
 
       sinon.assert.calledOnce(emitter.emit);
@@ -296,15 +259,14 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "debug",
           message: "hello, world",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a message and data", () => {
       let { emitter, context } = createMocks();
       context.debug = true;
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.debug("hello, world", { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -316,15 +278,14 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a non-string message", () => {
       let { emitter, context } = createMocks();
       context.debug = true;
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.debug({ foo: "bar" });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -333,15 +294,14 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "debug",
           message: "[object Object]",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a non-string message and data", () => {
       let { emitter, context } = createMocks();
       context.debug = true;
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.debug(new RangeError("Boom!"), { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -353,8 +313,7 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
   });
@@ -362,7 +321,7 @@ describe("createLogEmitter() function", () => {
   describe("warn", () => {
     it("can be called without any arguments", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.warn();
 
       sinon.assert.calledOnce(emitter.emit);
@@ -371,14 +330,13 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "warning",
           message: "",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with only a message", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.warn("hello, world");
 
       sinon.assert.calledOnce(emitter.emit);
@@ -387,14 +345,13 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "warning",
           message: "hello, world",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a message and data", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.warn("hello, world", { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -406,14 +363,13 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a non-error object", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.warn({ foo: "bar" });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -425,14 +381,13 @@ describe("createLogEmitter() function", () => {
           error: {
             foo: "bar"
           }
-        }),
-        context
+        })
       );
     });
 
     it("can be called with an error", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.warn(new RangeError("Boom!"));
 
       sinon.assert.calledOnce(emitter.emit);
@@ -445,14 +400,13 @@ describe("createLogEmitter() function", () => {
             name: "RangeError",
             message: "Boom!",
           }
-        }),
-        context
+        })
       );
     });
 
     it("can be called with an error and data", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.warn(new RangeError("Boom!"), { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -468,8 +422,7 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
   });
@@ -477,7 +430,7 @@ describe("createLogEmitter() function", () => {
   describe("error", () => {
     it("can be called without any arguments", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.error();
 
       sinon.assert.calledOnce(emitter.emit);
@@ -486,14 +439,13 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "error",
           message: "",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with only a message", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.error("hello, world");
 
       sinon.assert.calledOnce(emitter.emit);
@@ -502,14 +454,13 @@ describe("createLogEmitter() function", () => {
         sinon.match({
           level: "error",
           message: "hello, world",
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a message and data", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.error("hello, world", { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -521,14 +472,13 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
 
     it("can be called with a non-error object", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.error({ foo: "bar" });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -540,14 +490,13 @@ describe("createLogEmitter() function", () => {
           error: {
             foo: "bar"
           }
-        }),
-        context
+        })
       );
     });
 
     it("can be called with an error", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.error(new RangeError("Boom!"));
 
       sinon.assert.calledOnce(emitter.emit);
@@ -560,14 +509,13 @@ describe("createLogEmitter() function", () => {
             name: "RangeError",
             message: "Boom!",
           }
-        }),
-        context
+        })
       );
     });
 
     it("can be called with an error and data", () => {
       let { emitter, context } = createMocks();
-      let log = createLogEmitter(emitter, context);
+      let log = createLogEmitter(emitter, context.debug);
       log.error(new RangeError("Boom!"), { foo: "bar", answer: 42, now: /^regex$/ });
 
       sinon.assert.calledOnce(emitter.emit);
@@ -583,8 +531,7 @@ describe("createLogEmitter() function", () => {
           foo: "bar",
           answer: 42,
           now: /^regex$/
-        }),
-        context
+        })
       );
     });
   });
