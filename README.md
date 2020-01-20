@@ -300,19 +300,19 @@ log(myLogger, "error", new RangeError("Out of range!"));
 ```
 
 
-### `createLogEmitter(emitter, context)`
+### `createLogEmitter(emitter, [debug])`
 Creates a [`Logger`](https://github.com/CodeEngineOrg/code-engine-types/blob/master/src/logger.d.ts) that emits log messages via the given [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter).
 
 - **emitter:** - The [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) to which logs are emitted
 
-- **context:** - A CodeEngine [`Context` object](https://github.com/CodeEngineOrg/code-engine-types/blob/master/src/context.d.ts) that will be included in all emitted events to provide information about the build
+- **debug:** - (Optional) A boolean that indicates whether debug messages should be emitted
 
 ```javascript
 import { createLogEmitter } from "@code-engine/utils";
 import { EventEmitter } from "events";
 
 let emitter = new EventEmitter();
-let log = createLogEmitter(emitter, context);
+let log = createLogEmitter(emitter, true);
 
 log("This is a log message");
 log.warn("This is a warning message");
