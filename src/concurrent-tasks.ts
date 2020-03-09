@@ -1,5 +1,5 @@
 import { validate } from "@code-engine/validate";
-import { ono } from "ono";
+import { ono } from "@jsdevtools/ono";
 
 /**
  * Concurrently runs async tasks, up to a specified limit at a time.

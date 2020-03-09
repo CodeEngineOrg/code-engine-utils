@@ -1,5 +1,5 @@
 import { Logger, LogLevel } from "@code-engine/types";
-import { ErrorLike, ono } from "ono";
+import { ErrorLike, ono } from "@jsdevtools/ono";
 
 /**
  * A helper method that logs a message using the given `Logger` object and the specified `LogLevel`.

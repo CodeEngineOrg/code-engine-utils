@@ -1,6 +1,6 @@
 import { stringify } from "@code-engine/stringify";
 import { ZeroOrMore } from "@code-engine/types";
-import { ono } from "ono";
+import { ono } from "@jsdevtools/ono";
 
 /**
  * Returns the given value's iterator, or wraps a non-iterable value in an iterator.

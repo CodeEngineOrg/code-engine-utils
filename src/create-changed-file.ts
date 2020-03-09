@@ -1,7 +1,7 @@
 import { stringify } from "@code-engine/stringify";
 import { ChangedFile, ChangedFileInfo, FileChange } from "@code-engine/types";
 import { validate } from "@code-engine/validate";
-import { ono } from "ono";
+import { ono } from "@jsdevtools/ono";
 import { createFile } from "./create-file";
 
 

@@ -1,6 +1,6 @@
 import { stringify } from "@code-engine/stringify";
 import { validate } from "@code-engine/validate";
-import { ono } from "ono";
+import { ono } from "@jsdevtools/ono";
 
 /**
  * Splits an iterable into separate ones that each iterate a subset of the values. Each value in the

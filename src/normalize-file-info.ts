@@ -1,6 +1,6 @@
 import { stringify } from "@code-engine/stringify";
 import { AnyContents, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
-import { ono } from "ono";
+import { ono } from "@jsdevtools/ono";
 import * as path from "path";
 
 /**

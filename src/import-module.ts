@@ -1,4 +1,4 @@
-import { ono } from "ono";
+import { ono } from "@jsdevtools/ono";
 import * as resolveFrom from "resolve-from";
 import * as resolveGlobal from "resolve-global";
 
