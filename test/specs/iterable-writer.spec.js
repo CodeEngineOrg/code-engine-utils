@@ -2,11 +2,12 @@
 
 const { IterableWriter } = require("../../");
 const { assert, expect } = require("chai");
+const { host } = require("@jsdevtools/host-environment");
 const { delay, iterateAll } = require("../utils");
 const sinon = require("sinon");
 
 // CI environments are slow, so use a larger time buffer
-const TIME_BUFFER = process.env.CI ? 150 : 50;
+const TIME_BUFFER = host.ci ? 150 : 50;
 
 describe("IterableWriter class", () => {
 

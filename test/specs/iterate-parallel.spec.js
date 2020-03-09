@@ -1,11 +1,12 @@
 "use strict";
 
 const { iterateParallel } = require("../../");
+const { host } = require("@jsdevtools/host-environment");
 const { assert, expect } = require("chai");
 const { delay } = require("../utils");
 
 // CI environments are slow, so use a larger buffer
-const TIME_BUFFER = process.env.CI ? 150 : 50;
+const TIME_BUFFER = host.ci ? 150 : 50;
 
 describe("iterateParallel() function", () => {
 

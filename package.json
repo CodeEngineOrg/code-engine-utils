@@ -40,6 +40,7 @@
   "devDependencies": {
     "@code-engine/types": "^1.0.5",
     "@jsdevtools/eslint-config-modular": "^8.0.0",
+    "@jsdevtools/host-environment": "^2.0.2",
     "@jsdevtools/tslint-modular": "^2.0.2",
     "@jsdevtools/version-bump-prompt": "^6.0.2",
     "@types/chai": "^4.2.7",
