@@ -1,6 +1,6 @@
 {
   "name": "@code-engine/utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Internal CodeEngine utilities",
   "keywords": [
     "code-engine"
