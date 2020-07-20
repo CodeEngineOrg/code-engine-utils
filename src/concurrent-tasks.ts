@@ -1,4 +1,4 @@
-import { validate } from "@code-engine/validate";
+import { assert } from "@jsdevtools/assert";
 import { ono } from "@jsdevtools/ono";
 
 /**
@@ -15,7 +15,7 @@ export class ConcurrentTasks<T = unknown> {
   private _tasks = new Map<number, Promise<[number, T]>>();
 
   public constructor(concurrency: number) {
-    this._concurrency = validate.number.integer.positive(concurrency, "concurrency");
+    this._concurrency = assert.number.integer.positive(concurrency, "concurrency");
   }
 
   /**

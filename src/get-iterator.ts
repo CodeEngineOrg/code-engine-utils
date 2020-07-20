@@ -1,4 +1,4 @@
-import { stringify } from "@code-engine/stringify";
+import { stringify } from "@jsdevtools/humanize-anything";
 import { ZeroOrMore } from "@code-engine/types";
 import { ono } from "@jsdevtools/ono";
 

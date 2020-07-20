@@ -1,12 +1,12 @@
 import { CodeEngineEventEmitter, EventName, LogEventData, Logger, LogLevel } from "@code-engine/types";
-import { validate } from "@code-engine/validate";
+import { assert } from "@jsdevtools/assert";
 
 /**
  * Emits log messages via an EventEmitter.
  */
 export function createLogEmitter(emitter: CodeEngineEventEmitter, debug: boolean): Logger {
-  validate.value(emitter, "EventEmitter");
-  validate.type.function(emitter.emit, "EventEmitter");
+  assert.value(emitter, "EventEmitter");
+  assert.type.function(emitter.emit, "EventEmitter");
 
   function log(message: string | Error, data?: object): void {
     if (!message || typeof message === "string") {

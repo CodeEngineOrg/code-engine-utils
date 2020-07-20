@@ -1,4 +1,4 @@
-import { validate } from "@code-engine/validate";
+import { assert } from "@jsdevtools/assert";
 import { demandIterator } from "./get-iterator";
 import { IterableWriter } from "./iterable-writer";
 
@@ -8,7 +8,7 @@ import { IterableWriter } from "./iterable-writer";
  */
 export function iterateParallel<T>(iterable: AsyncIterable<T>, concurrency: number): AsyncIterable<T> {
   let iterator = demandIterator(iterable);
-  concurrency = validate.number.integer.positive(concurrency, "concurrency");
+  concurrency = assert.number.integer.positive(concurrency, "concurrency");
   let pendingReads = 0;
   let done = false;
 

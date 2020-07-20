@@ -1,6 +1,6 @@
-import { stringify } from "@code-engine/stringify";
+import { stringify } from "@jsdevtools/humanize-anything";
 import { ChangedFile, ChangedFileInfo, FileChange } from "@code-engine/types";
-import { validate } from "@code-engine/validate";
+import { assert } from "@jsdevtools/assert";
 import { ono } from "@jsdevtools/ono";
 import { createFile } from "./create-file";
 
@@ -20,7 +20,7 @@ export function createChangedFile(info: unknown, pluginName?: string): ChangedFi
     throw ono.type(`The type of file change must be specified (${list}).`);
   }
 
-  file.change = validate.value.oneOf(fileInfo.change, fileChangeTypes, "file change");
+  file.change = assert.value.oneOf(fileInfo.change, fileChangeTypes, "file change");
 
   return file;
 }

@@ -1,5 +1,5 @@
-import { stringify } from "@code-engine/stringify";
-import { validate } from "@code-engine/validate";
+import { stringify } from "@jsdevtools/humanize-anything";
+import { assert } from "@jsdevtools/assert";
 import { ono } from "@jsdevtools/ono";
 
 /**
@@ -13,7 +13,7 @@ export function splitIterable<T>(source: AsyncIterable<T>, concurrency: number):
     throw ono.type(`${value} is not an async iterator.`);
   }
 
-  validate.number.integer.positive(concurrency, "concurrency");
+  assert.number.integer.positive(concurrency, "concurrency");
 
   let iterator = source[Symbol.asyncIterator]();
   return [...Array(concurrency)].map(() => createIterable<T>(iterator));

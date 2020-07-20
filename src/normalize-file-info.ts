@@ -1,4 +1,4 @@
-import { stringify } from "@code-engine/stringify";
+import { stringify } from "@jsdevtools/humanize-anything";
 import { AnyContents, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
 import { ono } from "@jsdevtools/ono";
 import * as path from "path";
