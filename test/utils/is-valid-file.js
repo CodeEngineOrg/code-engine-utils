@@ -14,12 +14,12 @@ function isValidFile (file) {
   expect(file.modifiedAt).to.be.an.instanceOf(Date);
   expect(file.metadata).to.be.an("object");
   expect(file.contents).to.be.an.instanceOf(Buffer);
-  expect(file.source).to.be.a("string").and.not.empty;
+  expect(file.source).to.be.a("string").with.length.of.at.least(1);
   expect(new URL(file.source).href).to.equal(file.source);
   expect(file.dir).to.be.a("string");
-  expect(file.name).to.be.a("string").and.not.empty;
+  expect(file.name).to.be.a("string").with.length.of.at.least(1);
   expect(file.extension).to.be.a("string");
-  expect(file.path).to.be.a("string").and.not.empty;
+  expect(file.path).to.be.a("string").with.length.of.at.least(1);
 
   expect(file).to.include.keys("sourceMap");
   if (file.sourceMap !== undefined) {

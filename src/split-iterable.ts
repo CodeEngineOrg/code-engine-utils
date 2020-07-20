@@ -1,4 +1,4 @@
-import { stringify } from "@jsdevtools/humanize-anything";
+import { humanize } from "@jsdevtools/humanize-anything";
 import { assert } from "@jsdevtools/assert";
 import { ono } from "@jsdevtools/ono";
 
@@ -9,7 +9,7 @@ import { ono } from "@jsdevtools/ono";
  */
 export function splitIterable<T>(source: AsyncIterable<T>, concurrency: number): Array<AsyncIterable<T>> {
   if (!source || typeof source[Symbol.asyncIterator] !== "function") {
-    let value = stringify(source, { capitalize: true, article: true });
+    let value = humanize(source, { capitalize: true, article: true });
     throw ono.type(`${value} is not an async iterator.`);
   }
 

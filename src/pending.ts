@@ -13,8 +13,7 @@ export function pending<T>(): Pending<T> {
   return {
     promise,
     resolve(result) {
-      // tslint:disable-next-line: no-floating-promises
-      Promise.resolve(result).then(resolve);
+      Promise.resolve(result).then(resolve);  // eslint-disable-line @typescript-eslint/no-floating-promises
     },
     reject(reason: Error) {
       Promise.reject(reason).catch(reject);

@@ -11,7 +11,7 @@ describe("normalizeFileInfo() function", () => {
    */
   function isNormalizedFileInfo (info) {
     expect(info).to.be.an("object");
-    expect(info.path).to.be.a("string").and.not.empty;
+    expect(info.path).to.be.a("string").with.length.of.at.least(1);
 
     if ("createdAt" in info) {
       expect(info.createdAt).to.be.an.instanceOf(Date);
@@ -30,7 +30,7 @@ describe("normalizeFileInfo() function", () => {
     }
 
     if ("source" in info) {
-      expect(info.source).to.be.a("string").and.not.empty;
+      expect(info.source).to.be.a("string").with.length.of.at.least(1);
       expect(new URL(info.source).href).to.equal(info.source);
     }
 

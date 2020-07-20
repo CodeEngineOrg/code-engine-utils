@@ -50,7 +50,7 @@ export class ConcurrentTasks<T = unknown> {
     let promises = [...this._tasks.values()];
 
     if (promises.length === 0) {
-      throw ono.range(`There are no pending tasks.`);
+      throw ono.range("There are no pending tasks.");
     }
 
     // Wait for a task to finish

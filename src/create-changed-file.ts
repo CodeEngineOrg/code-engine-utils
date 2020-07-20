@@ -1,6 +1,6 @@
-import { stringify } from "@jsdevtools/humanize-anything";
 import { ChangedFile, ChangedFileInfo, FileChange } from "@code-engine/types";
 import { assert } from "@jsdevtools/assert";
+import { humanize } from "@jsdevtools/humanize-anything";
 import { ono } from "@jsdevtools/ono";
 import { createFile } from "./create-file";
 
@@ -16,7 +16,7 @@ export function createChangedFile(info: unknown, pluginName?: string): ChangedFi
   let fileInfo = info as ChangedFileInfo;
 
   if (!fileInfo.change) {
-    let list = stringify.values(fileChangeTypes, { conjunction: "or" });
+    let list = humanize.values(fileChangeTypes, { conjunction: "or" });
     throw ono.type(`The type of file change must be specified (${list}).`);
   }
 

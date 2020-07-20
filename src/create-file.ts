@@ -38,48 +38,58 @@ interface CodeEngineFile extends FileInfo {
  * It defines the convenience members that a `File` has in addition to a `FileInfo` object.
  */
 const filePrototype = {
-  get dir(this: CodeEngineFile): string {
-    return this[_private].dir;
+  get dir(): string {
+    let file = this as unknown as CodeEngineFile;
+    return file[_private].dir;
   },
 
-  set dir(this: CodeEngineFile, dir: string) {
-    let { name, ext } = this[_private];
-    this.path = path.format({ dir, name, ext });
+  set dir(dir: string) {
+    let file = this as unknown as CodeEngineFile;
+    let { name, ext } = file[_private];
+    file.path = path.format({ dir, name, ext });
   },
 
-  get name(this: CodeEngineFile): string {
-    let { name, ext } = this[_private];
+  get name(): string {
+    let file = this as unknown as CodeEngineFile;
+    let { name, ext } = file[_private];
     return name + ext;
   },
 
-  set name(this: CodeEngineFile, base: string) {
-    let { dir } = this[_private];
-    this.path = path.format({ dir, base });
+  set name(base: string) {
+    let file = this as unknown as CodeEngineFile;
+    let { dir } = file[_private];
+    file.path = path.format({ dir, base });
   },
 
-  get extension(this: CodeEngineFile): string {
-    return this[_private].ext;
+  get extension(): string {
+    let file = this as unknown as CodeEngineFile;
+    return file[_private].ext;
   },
 
-  set extension(this: CodeEngineFile, ext: string) {
-    let { dir, name } = this[_private];
-    this.path = path.format({ dir, name, ext });
+  set extension(ext: string) {
+    let file = this as unknown as CodeEngineFile;
+    let { dir, name } = file[_private];
+    file.path = path.format({ dir, name, ext });
   },
 
-  get text(this: CodeEngineFile): string {
-    return this[_private].contents.toString();
+  get text(): string {
+    let file = this as unknown as CodeEngineFile;
+    return file[_private].contents.toString();
   },
 
-  set text(this: CodeEngineFile, text: string) {
-    this.contents = Buffer.from(text);
+  set text(text: string) {
+    let file = this as unknown as CodeEngineFile;
+    file.contents = Buffer.from(text);
   },
 
-  get size(this: CodeEngineFile): number {
-    return this[_private].contents.byteLength;
+  get size(): number {
+    let file = this as unknown as CodeEngineFile;
+    return file[_private].contents.byteLength;
   },
 
-  toString(this: CodeEngineFile): string {
-    return this.path;
+  toString(): string {
+    let file = this as unknown as CodeEngineFile;
+    return file.path;
   },
 
   [Symbol.toStringTag]: "File",

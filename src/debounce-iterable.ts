@@ -36,10 +36,11 @@ export function debounceIterable<T>(iterable: AsyncIterable<T>, delay = 0): Asyn
 
         // Write all values as soon as the threshhold time passes,
         // unless additional values are received first
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         timeout = setTimeout(writeValues, delay);
 
         // Read the next value, possibly before the timeout expires
-        return readNext();
+        return await readNext();
       }
     }
     catch (error) {

@@ -36,7 +36,7 @@ export class IterableWriter<T> {
 
   public set onRead(value: (() => void) | undefined) {
     if (value && this._onRead) {
-      throw ono(`Only one "onRead" event handler is allowed.`);
+      throw ono("Only one \"onRead\" event handler is allowed.");
     }
 
     this._onRead = value;
@@ -176,7 +176,7 @@ export class IterableWriter<T> {
    */
   private _assertWritable() {
     if (this._doneWriting) {
-      throw ono(`Cannot write values after the iterator has ended.`);
+      throw ono("Cannot write values after the iterator has ended.");
     }
   }
 }

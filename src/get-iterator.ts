@@ -1,4 +1,4 @@
-import { stringify } from "@jsdevtools/humanize-anything";
+import { humanize } from "@jsdevtools/humanize-anything";
 import { ZeroOrMore } from "@code-engine/types";
 import { ono } from "@jsdevtools/ono";
 
@@ -29,7 +29,7 @@ export function demandIterator<T>(iterable: ZeroOrMore<T>): Iterator<T> | AsyncI
   let iterator = tryGetIterator(iterable);
 
   if (!iterator || typeof iterator.next !== "function") {
-    let value = stringify(iterable, { capitalize: true, article: true });
+    let value = humanize(iterable, { capitalize: true, article: true });
     throw ono.type(`${value} is not iterable.`);
   }
 

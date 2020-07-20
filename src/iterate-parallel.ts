@@ -22,7 +22,7 @@ export function iterateParallel<T>(iterable: AsyncIterable<T>, concurrency: numb
   function read() {
     while (!done && pendingReads < concurrency) {
       pendingReads++;
-      readNext();       // tslint:disable-line: no-floating-promises
+      readNext(); // eslint-disable-line @typescript-eslint/no-floating-promises
     }
   }
 

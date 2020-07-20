@@ -1,4 +1,3 @@
-// tslint:disable: no-floating-promises
 import { demandIterator } from "./get-iterator";
 import { IterableWriter } from "./iterable-writer";
 
@@ -53,7 +52,7 @@ export function joinIterables<T>(...iterables: Array<AsyncIterable<T>>): AsyncIt
       for (let source of hasZeroPending) {
         actualReadCounter++;
         source.pendingReads++;
-        readNextFromSource(source);
+        readNextFromSource(source); // eslint-disable-line @typescript-eslint/no-floating-promises
       }
     }
     else if (activeSources.length > 0 && onReadCounter > actualReadCounter) {
@@ -68,7 +67,7 @@ export function joinIterables<T>(...iterables: Array<AsyncIterable<T>>): AsyncIt
 
       actualReadCounter++;
       sourceToReadFrom.pendingReads++;
-      readNextFromSource(sourceToReadFrom);
+      readNextFromSource(sourceToReadFrom); // eslint-disable-line @typescript-eslint/no-floating-promises
     }
   }
 
@@ -103,7 +102,7 @@ export function joinIterables<T>(...iterables: Array<AsyncIterable<T>>): AsyncIt
       else if (result.done) {
         // We tried to read a value from this source, but it didn't have any more values.
         // But we still need a value, so read from a different source instead.
-        readFromSources();
+        readFromSources();  // eslint-disable-line @typescript-eslint/no-floating-promises
       }
     }
     catch (error) {

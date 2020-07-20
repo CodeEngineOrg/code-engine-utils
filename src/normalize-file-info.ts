@@ -1,4 +1,4 @@
-import { stringify } from "@jsdevtools/humanize-anything";
+import { humanize } from "@jsdevtools/humanize-anything";
 import { AnyContents, FileInfo, FileMetadata, SourceMap } from "@code-engine/types";
 import { ono } from "@jsdevtools/ono";
 import * as path from "path";
@@ -8,7 +8,7 @@ import * as path from "path";
  */
 export function normalizeFileInfo(info: unknown): NormalizedFileInfo {
   if (!isFileInfo(info)) {
-    throw ono.type(`Invalid CodeEngine file: ${stringify(info)}. Expected an object with at least a "path" property.`);
+    throw ono.type(`Invalid CodeEngine file: ${humanize(info)}. Expected an object with at least a "path" property.`);
   }
 
   let normalized: NormalizedFileInfo = {
@@ -79,7 +79,7 @@ export function toBuffer(value?: AnyContents): Buffer {
     }
   }
   catch (error) {
-    throw ono.type(error, `Invalid file contents: ${stringify(value)}`);
+    throw ono.type(error, `Invalid file contents: ${humanize(value)}`);
   }
 }
 
