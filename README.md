@@ -1,8 +1,8 @@
 CodeEngine utilities
 ======================================
 
-[![Cross-Platform Compatibility](https://engine.codes/img/badges/os-badges.svg)](https://github.com/CodeEngineOrg/code-engine-utils/blob/master/.github/workflows/CI-CD.yaml)
-[![Build Status](https://github.com/CodeEngineOrg/code-engine-utils/workflows/CI-CD/badge.svg)](https://github.com/CodeEngineOrg/code-engine-utils/blob/master/.github/workflows/CI-CD.yaml)
+[![Cross-Platform Compatibility](https://engine.codes/img/badges/os-badges.svg)](https://github.com/CodeEngineOrg/code-engine-utils/actions)
+[![Build Status](https://github.com/CodeEngineOrg/code-engine-utils/workflows/CI-CD/badge.svg)](https://github.com/CodeEngineOrg/code-engine-utils/actions)
 
 [![Coverage Status](https://coveralls.io/repos/github/CodeEngineOrg/code-engine-utils/badge.svg?branch=master)](https://coveralls.io/github/CodeEngineOrg/code-engine-utils)
 [![Dependencies](https://david-dm.org/CodeEngineOrg/code-engine-utils.svg)](https://david-dm.org/CodeEngineOrg/code-engine-utils)
@@ -323,7 +323,7 @@ log.warn("This is a warning message");
 
 Contributing
 --------------------------
-Contributions, enhancements, and bug-fixes are welcome!  [File an issue](https://github.com/CodeEngineOrg/code-engine-utils/issues) on GitHub and [submit a pull request](https://github.com/CodeEngineOrg/code-engine-utils/pulls).
+Contributions, enhancements, and bug-fixes are welcome!  [Open an issue](https://github.com/CodeEngineOrg/code-engine-utils/issues) on GitHub and [submit a pull request](https://github.com/CodeEngineOrg/code-engine-utils/pulls).
 
 #### Building
 To build the project locally on your computer:
